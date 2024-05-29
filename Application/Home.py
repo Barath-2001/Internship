@@ -23,6 +23,7 @@ if selected=='Home':
             st.success('File upload successfully.')
         except Exception as e:
             print(e)
+        st.write(po_receiving_data.head())
         st.success('File upload successfully.')
         df_main=po_receiving_data.copy()                          
         df_main['ITEM_ID'].fillna(-1,inplace=True)
