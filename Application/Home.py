@@ -15,7 +15,7 @@ with st.sidebar:
         options=["Home"]
     )
 if selected=='Home':
-    file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx'])
+    file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
     if file is not None:
         st.write("Hello")
         try:
