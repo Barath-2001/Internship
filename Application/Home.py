@@ -19,11 +19,9 @@ with st.sidebar:
 if selected=='Home':
     file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
     if file is not None:
-        st.write("Hello")
         po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
         st.success('File upload successfully.')
         st.write(po_receiving_data.head())
-        st.success('File upload successfully.')
         df_main=po_receiving_data.copy()                          
         df_main['ITEM_ID'].fillna(-1,inplace=True)
         lists=[[4821176,21635887,200,'ACCEPT','2023-04-07'],[4821048,21635887,300,'ACCEPT','2023-08-28']]                           
