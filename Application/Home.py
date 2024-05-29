@@ -16,10 +16,8 @@ with st.sidebar:
     )
 if selected=='Home':
     file= st.file_uploader(label = 'Upload your dataset:')
-
     if file:
-        st.write(file)
-        po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P")
+        po_receiving_data=pd.read_excel(file,usecols="C,F,M,O:P")
         st.success('File upload successfully.')
         df_main=po_receiving_data.copy()                          
         df_main['ITEM_ID'].fillna(-1,inplace=True)
