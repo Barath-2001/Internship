@@ -103,7 +103,7 @@ if selected=='Home':
         # plt.ylim(0,40)
         # plt.legend(title='VENDOR  ID',bbox_to_anchor=(1.05,1))
         # st.pyplot(fig)
-        st.write('All items are stable for vendor', inp1)
+        #st.write('All items are stable for vendor', inp1)
         df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
         fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
             xaxis_title="Date", yaxis_title="Rejection Rate")
