@@ -17,9 +17,9 @@ with st.sidebar:
 if selected=='Home':
     file= st.file_uploader(label = 'Upload your dataset:')
     if file:
-        po_receiving_data=pd.read_excel(file,usecols="C,F,M,O:P")
+        po_receiving_data=pd.read_excel(file)
         st.success('File upload successfully.')
-        df_main=po_receiving_data.copy()                          
+        df_main=po_receiving_data[['VENDOR_ID','ITEM_ID','ACTUAL_QUANTITY','TRANSACTION_TYPE','TRANSACTION_DATE']].copy()                          
         df_main['ITEM_ID'].fillna(-1,inplace=True)
         lists=[[4821176,21635887,200,'ACCEPT','2023-04-07'],[4821048,21635887,300,'ACCEPT','2023-08-28']]                           
         for i in lists:                                                                                                             
