@@ -18,7 +18,7 @@ if selected=='Home':
     file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
     if file is not None:
         st.write("Hello")
-        po_receiving_data=pd.read_excel(file)
+        po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
         st.success('File upload successfully.')
         st.write(po_receiving_data.head())
         st.success('File upload successfully.')
