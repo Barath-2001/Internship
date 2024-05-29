@@ -18,11 +18,8 @@ if selected=='Home':
     file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
     if file is not None:
         st.write("Hello")
-        try:
-            po_receiving_data=pd.read_excel(file)
-            st.success('File upload successfully.')
-        except Exception as e:
-            print(e)
+        po_receiving_data=pd.read_excel(file)
+        st.success('File upload successfully.')
         st.write(po_receiving_data.head())
         st.success('File upload successfully.')
         df_main=po_receiving_data.copy()                          
