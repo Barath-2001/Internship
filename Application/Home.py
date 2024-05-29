@@ -19,7 +19,7 @@ if selected=='Home':
     if file is not None:
         st.write("Hello")
         try:
-            po_receiving_data=pd.read_csv(file)
+            po_receiving_data=pd.read_excel(file)
             st.success('File upload successfully.')
         except Exception as e:
             print(e)
