@@ -140,7 +140,7 @@ if selected=='Home':
             return slopes
         start=pd.to_datetime(str(st.date_input("Enter start date", datetime.date(2023, 6, 1))))
         end = pd.to_datetime(str(st.date_input("Enter end date", datetime.date(2023, 8, 1))))
-        st.write("The dates are :",start,end)
+        st.write("The dates are :",end-start)
         df=rej_df.loc[(rej_df['ITEM_ID']==21635887) & (rej_df['TRANSACTION_DATE']>=start) & (rej_df['TRANSACTION_DATE']<=end)].sort_values(by=['TRANSACTION_DATE'])
         st.write(df.head())
         fig = px.line(df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
