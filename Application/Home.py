@@ -15,9 +15,14 @@ with st.sidebar:
         options=["Home"]
     )
 if selected=='Home':
-    file= st.file_uploader(label = 'Upload your dataset:')
-    if file:
-        po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P")
+    file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx'])
+    if file is not None:
+        st.write("Hello")
+        try:
+            po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P")
+            st.success('File upload successfully.')
+        except Exception as e:
+            print(e)
         st.success('File upload successfully.')
         df_main=po_receiving_data.copy()                          
         df_main['ITEM_ID'].fillna(-1,inplace=True)
