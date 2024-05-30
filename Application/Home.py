@@ -30,11 +30,11 @@ if selected=='Home':
         acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
         a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
         acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
-        acpt_df.reset_index(drop=True,inplace=True)  
-        acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
-        acpt_df.set_index('MONTH',inplace=True)
+        acpt_df.reset_index(drop=True,inplace=True) 
         st.header("Accepted data")
-        st.write(acpt_df.tail())       
+        st.write(acpt_df.head()) 
+        acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
+        acpt_df.set_index('MONTH',inplace=True)      
         rej_df=df_main.loc[ (df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT') | (df_main['TRANSACTION_TYPE']=='RETURN TO VENDOR') | (df_main['TRANSACTION_TYPE']=='RETURN TO RECEIVING') | (df_main['TRANSACTION_TYPE']=='TRANSFER')) ].copy()
         rej_df.reset_index(drop=True, inplace=True)
         st.header("Rejection data")
