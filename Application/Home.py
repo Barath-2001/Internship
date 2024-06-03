@@ -9,7 +9,7 @@ import datetime
 
 
 st.set_page_config(page_title = 'Application')
-st.title("Project")
+st.title("Supplier Analysis")
 
 with st.sidebar:
     selected=option_menu(
