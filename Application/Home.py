@@ -91,9 +91,13 @@ if selected=='Home':
         rej_df.insert(5,'REJECTION_RATE',l)
         supp1=list(rej_df['VENDOR_ID'].unique())
         inp1=st.selectbox(label="Supplier:", options=supp1)
+        diction={}
+        for i in supp1:
+            diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
+        inp2=st.selectbox(label="Item", options=diction[inp1])
         fig ,ax=plt.subplots()
         fig = plt.figure(figsize=(12, 4))
-        df1= rej_df.loc[rej_df['VENDOR_ID']==inp1].sort_values(by=['TRANSACTION_DATE'])
+        df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2)].sort_values(by=['TRANSACTION_DATE'])
         rej_df.loc[rej_df['VENDOR_ID']==inp1].sort_values(by=['TRANSACTION_DATE']).groupby(['ITEM_ID'])['REJECTION_RATE'].plot(figsize=(12,6),legend=True)
         fig = px.line(df1, x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='ITEM_ID', markers=True).update_layout(
             xaxis_title="Date", yaxis_title="Rejection Rate")
