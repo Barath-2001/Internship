@@ -52,8 +52,8 @@ if selected=='Home':
         rej_df.set_index('MONTH',inplace=True)   
         st.header("Analysis")  
         fig,ax=plt.subplots(figsize=(18,6))                                                                                         
-        sns.countplot(x=df_main['TRANSACTION_TYPE'])
-        arr=list(df_main['TRANSACTION_TYPE'].value_counts())                                                                        
+        sns.countplot(x=df_main.loc[df_main['ITEM_ID']!=-1]['TRANSACTION_TYPE'])
+        arr=list(df_main.loc[df_main['ITEM_ID']!=-1]['TRANSACTION_TYPE'].value_counts())                                                                        
         for i ,v in enumerate(arr):
             plt.text(i,v,str(v),ha='center')
         st.pyplot(fig)
