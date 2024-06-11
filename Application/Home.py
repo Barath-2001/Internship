@@ -51,11 +51,13 @@ if selected=='Home':
         rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
         rej_df.set_index('MONTH',inplace=True)   
         st.header("Analysis")  
-        fig,ax=plt.subplots(figsize=(18,6))                                                                                         
-        sns.countplot(x=df_main.loc[df_main['ITEM_ID']!=-1]['TRANSACTION_TYPE'])
         arr=list(df_main.loc[df_main['ITEM_ID']!=-1]['TRANSACTION_TYPE'].value_counts())                                                                        
+        fig,ax=plt.subplots(figsize=(18,6))                                                                                         
+        df_main['TRANSACTION_TYPE'].loc[df_main['ITEM_ID']!=-1].value_counts().plot.bar()
         for i ,v in enumerate(arr):
             plt.text(i,v,str(v),ha='center')
+        plt.xlabel("Transaction Type")
+        plt.ylabel("Quantity")
         st.pyplot(fig)
         key=['ACCEPTED','REJECTED']
         values=[]
