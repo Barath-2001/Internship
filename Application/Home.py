@@ -51,10 +51,13 @@ if selected=='Home':
         rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
         rej_df.set_index('MONTH',inplace=True)   
         st.header("Analysis")  
-        arr=list(df_main.loc[df_main['ITEM_ID']!=-1]['TRANSACTION_TYPE'].value_counts())                                                                        
-        fig,ax=plt.subplots(figsize=(18,6))                                                                                         
-        df_main['TRANSACTION_TYPE'].loc[df_main['ITEM_ID']!=-1].value_counts().plot.bar()
-        for i ,v in enumerate(arr):
+        typ=list(df_main['TRANSACTION_TYPE'].unique())
+        qnt=[]
+        for i in typ:
+            qnt.append(df_main.loc[(df_main['TRANSACTION_TYPE']==i)& (df_main['ITEM_ID']!=-1)]['ACTUAL_QUANTITY'].sum())
+        fig,ax=plt.subplots(figsize=(18,8))
+        plt.bar(typ,qnt)
+        for i ,v in enumerate(qnt):
             plt.text(i,v,str(v),ha='center')
         plt.xlabel("Transaction Type")
         plt.ylabel("Quantity")
