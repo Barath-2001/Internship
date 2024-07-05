@@ -5,6 +5,7 @@ import pandas as pd
 import seaborn as sns
 import plotly.express as px
 from streamlit_option_menu import option_menu
+import openpyxl
 import datetime
 
 
@@ -21,7 +22,7 @@ if selected=='Home':
     if file is not None:
         po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
         st.success('File upload successfully.')
-        df_main=po_receiving_data.copy()                          
+        df_main=po_receiving_data.copy()                                                                                            
         df_main['ITEM_ID'].fillna(-1,inplace=True)
         lists=[[4821176,21635887,200,'ACCEPT','2023-04-07'],[4821048,21635887,300,'ACCEPT','2023-08-28']]                           
         for i in lists:                                                                                                             
@@ -30,11 +31,11 @@ if selected=='Home':
         acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
         a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
         acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
-        acpt_df.reset_index(drop=True,inplace=True) 
+        acpt_df.reset_index(drop=True,inplace=True)  
         st.header("Accepted data")
         st.write(acpt_df.head()) 
         acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
-        acpt_df.set_index('MONTH',inplace=True)      
+        acpt_df.set_index('MONTH',inplace=True)     
         rej_df=df_main.loc[ (df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT') | (df_main['TRANSACTION_TYPE']=='RETURN TO VENDOR') | (df_main['TRANSACTION_TYPE']=='RETURN TO RECEIVING') | (df_main['TRANSACTION_TYPE']=='TRANSFER')) ].copy()
         rej_df.reset_index(drop=True, inplace=True)
         st.header("Rejection data")
@@ -45,7 +46,7 @@ if selected=='Home':
             rej_df.loc[len(rej_df.index)]=i                                             
         rej_df.reset_index(drop=True, inplace=True)                                                                                 
         rej_df['TRANSACTION_TYPE']='REJECT'                                              
-        a=pd.to_datetime(rej_df['TRANSACTION_DATE'])                                                                                
+        a=pd.to_datetime(rej_df['TRANSACTION_DATE'],errors='coerce')                                                                                
         rej_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                         
         rej_df.reset_index(drop=True,inplace=True)       
         rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
@@ -70,7 +71,7 @@ if selected=='Home':
         ax1.pie(values,labels=key,autopct="%1.1f%%")
         ax1.axis('equal')  
         plt.legend()
-        st.pyplot(fig1)    
+        st.pyplot(fig1)
         rej=dict(rej_df.groupby(["VENDOR_ID"])["ACTUAL_QUANTITY"].sum())
         rej_vendor=dict(sorted(rej.items(), key=lambda item: item[1],reverse=True))
         key=list(rej_vendor.keys())
@@ -95,7 +96,7 @@ if selected=='Home':
         del(rej_df['REJECTION_RATE'])
         rej_df.insert(5,'REJECTION_RATE',l)
         supp1=list(rej_df['VENDOR_ID'].unique())
-        inp1=st.selectbox(label="Supplier:", options=supp1)
+        inp1=st.selectbox(label="Vendor:", options=supp1)
         diction={}
         for i in supp1:
             diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
@@ -107,46 +108,68 @@ if selected=='Home':
         fig = px.line(df1, x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='ITEM_ID', markers=True).update_layout(
             xaxis_title="Date", yaxis_title="Rejection Rate")
         st.plotly_chart(fig,use_container_width=True)
-        df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
-        fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
-            xaxis_title="Date", yaxis_title="Rejection Rate")
-        st.plotly_chart(fig,use_container_width=True)
-        def Trend(supp,slopes):
+        def Trend(supp,slopes,time,vendor):
             down_flag=0
+            month=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
             up_flag=0
+            neutral_flag=0
+            mon=[]
             for i in range(len(slopes)):
                 for j in range(len(slopes[i])):
                     if slopes[i][j]<0.0:
                         up_flag=1
-                    if slopes[i][j]>=0.0:
+                    if slopes[i][j]>0.0:
                         down_flag=1
-            if up_flag==0:
-                st.write("All Vendor have a upward trend")
-            if down_flag==0:
-                st.write("All Vendor have an downward trend")
-        def Slope(df):
+                    if slopes[i][j]==0:
+                        neutral_flag=1
+                    if slopes[i][j]<0:
+                        mon.append(time[i])
+                    if slopes[i][j]>0:
+                        mon.append(time[i])
+            if neutral_flag==1 and up_flag ==0 and down_flag==0:
+                st.write("Vendor {0} has no irregularity ".format(vendor))
+            elif up_flag==0:
+                st.write("Vendor {0} have a upward trend in the month {1}".format(vendor,month[mon[0]-1]))
+            elif down_flag==0:
+                st.write("Vendor {0} have an downward trend in the month {1}".format(vendor,month[mon[0]-1]) )
+        def Slope(df,vendor):
             supp=list(df['VENDOR_ID'].unique())
             slopes=[]
+            time=list(df['TRANSACTION_DATE'].dt.month)
             for i in supp:
                 y=list(df.loc[df['VENDOR_ID']==i]['REJECTION_RATE'])
                 slope=[0.0]
                 N=len(y)
+                print("y=",y)
                 x=[i for i in range(1,N+1)]
                 for i in range(N):
                     if i+1<N:
                         slope.append((y[i+1]-y[i])/(x[i+1]-x[i]))
                 slopes.append(slope)
-            Trend(supp,slopes)
+            Trend(supp,slopes,time,vendor)
             return slopes
-        start=pd.to_datetime(str(st.date_input("Enter start date", datetime.date(2023, 6, 1))))
-        end = pd.to_datetime(str(st.date_input("Enter end date", datetime.date(2023, 8, 1))))
-        st.write("The dates are :",end-start)
-        df=rej_df.loc[(rej_df['ITEM_ID']==21635887) & (rej_df['TRANSACTION_DATE']>=start) & (rej_df['TRANSACTION_DATE']<=end)].sort_values(by=['TRANSACTION_DATE'])
-        st.write(df.head())
-        fig = px.line(df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
-        xaxis_title="Date", yaxis_title="Rejection Rate")
+        Slope(df1,inp1)
+        item_list=list(rej_df['ITEM_ID'].unique())
+        inp3=st.selectbox(label="Item",options=item_list)
+        lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
+        inp4=st.selectbox(label="Item",options=lists)
+        temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)]
+        fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
+            xaxis_title="Date", yaxis_title="Rejection Rate")
         st.plotly_chart(fig,use_container_width=True)
-        Slope(df)
+        Slope(temp_df,inp4)
+        # df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
+        # fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
+        #     xaxis_title="Date", yaxis_title="Rejection Rate")
+        # st.plotly_chart(fig,use_container_width=True)
+        # start=pd.to_datetime(str(st.date_input("Enter start date", datetime.date(2023, 6, 1))))
+        # end = pd.to_datetime(str(st.date_input("Enter end date", datetime.date(2023, 8, 1))))
+        # st.write("The dates are :",end-start)
+        # df=rej_df.loc[(rej_df['ITEM_ID']==21635887) & (rej_df['TRANSACTION_DATE']>=start) & (rej_df['TRANSACTION_DATE']<=end)].sort_values(by=['TRANSACTION_DATE'])
+        # st.write(df.head())
+        # fig = px.line(df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
+        # xaxis_title="Date", yaxis_title="Rejection Rate")
+        # st.plotly_chart(fig,use_container_width=True)
     else:
         st.warning('Upload a File.')
 
