@@ -150,7 +150,7 @@ if selected=='Home':
                                     flag=1       
                                 else :
                                     l.append(time[j])
-                                    flag==1
+                                    flag=1
                         else:
                             flag=0
                             count=0
