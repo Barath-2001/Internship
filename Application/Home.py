@@ -23,27 +23,21 @@ if selected=='Home':
         po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
         st.success('File upload successfully.')
         df_main=po_receiving_data.copy()                                                                                            
-        df_main['ITEM_ID'].fillna(-1,inplace=True)
-        lists=[[4821176,21635887,200,'ACCEPT','2023-04-07'],[4821048,21635887,300,'ACCEPT','2023-08-28']]                           
-        for i in lists:                                                                                                             
-            df_main.loc[len(df_main.index)]=i                                                                                                                                                                                                         
+        df_main['ITEM_ID'].fillna(-1,inplace=True)                                                                                                                                                                                                 
         df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce')               
         acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
         a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
         acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
         acpt_df.reset_index(drop=True,inplace=True)  
         st.header("Accepted data")
-        st.write(acpt_df.head()) 
+        st.write(acpt_df.sample(5).reset_index(drop=True)) 
         acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
         acpt_df.set_index('MONTH',inplace=True)     
         rej_df=df_main.loc[ (df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT') | (df_main['TRANSACTION_TYPE']=='RETURN TO VENDOR') | (df_main['TRANSACTION_TYPE']=='RETURN TO RECEIVING') | (df_main['TRANSACTION_TYPE']=='TRANSFER')) ].copy()
         rej_df.reset_index(drop=True, inplace=True)
         st.header("Rejection data")
-        st.write(rej_df.head())
-        rej_df['REJECTION_RATE']=0.0
-        add_list=[[4821048,21635887,20,'REJECT','2023-06-04',0.0],[4821048,21635887,40,'REJECT','2023-07-09',0.0],[4821048,21635887,60,'REJECT','2023-08-14',0.0],[4821176,21635887,10,'REJECT','2023-06-04',0.0],[4821176,21635887,20,'REJECT','2023-07-09',0.0],[4821176,21635887,30,'REJECT','2023-08-14',0.0],[4821186,21635887,10,'REJECT','2023-06-04',4.5],[4821186,21635887,20,'REJECT','2023-07-01',7.5],[4821186,21635887,30,'REJECT','2023-08-01',6.6]]
-        for i in add_list:                                                                                                               
-            rej_df.loc[len(rej_df.index)]=i                                             
+        st.write(rej_df.sample(5).reset_index(drop=True))
+        rej_df['REJECTION_RATE']=0.0                                            
         rej_df.reset_index(drop=True, inplace=True)                                                                                 
         rej_df['TRANSACTION_TYPE']='REJECT'                                              
         a=pd.to_datetime(rej_df['TRANSACTION_DATE'],errors='coerce')                                                                                
@@ -56,7 +50,7 @@ if selected=='Home':
         qnt=[]
         for i in typ:
             qnt.append(df_main.loc[(df_main['TRANSACTION_TYPE']==i)& (df_main['ITEM_ID']!=-1)]['ACTUAL_QUANTITY'].sum())
-        fig,ax=plt.subplots(figsize=(18,8))
+        fig,ax=plt.subplots(figsize=(18,6))
         plt.bar(typ,qnt)
         for i ,v in enumerate(qnt):
             plt.text(i,v,str(v),ha='center')
@@ -101,14 +95,22 @@ if selected=='Home':
         for i in supp1:
             diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
         inp2=st.selectbox(label="Item", options=diction[inp1])
+        search=st.checkbox("Advance Search") 
+        if search:
+            date_1=pd.to_datetime(st.date_input("Start Date"))
+            date_2=pd.to_datetime(st.date_input("End Date"))
+            df1= rej_df.loc[((rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2))&(rej_df['TRANSACTION_DATE']>=date_1) &(rej_df['TRANSACTION_DATE']<=date_2) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        else:
+            D=0
+            df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         fig ,ax=plt.subplots()
         fig = plt.figure(figsize=(12, 4))
-        df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2)].sort_values(by=['TRANSACTION_DATE'])
         rej_df.loc[rej_df['VENDOR_ID']==inp1].sort_values(by=['TRANSACTION_DATE']).groupby(['ITEM_ID'])['REJECTION_RATE'].plot(figsize=(12,6),legend=True)
         fig = px.line(df1, x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='ITEM_ID', markers=True).update_layout(
             xaxis_title="Date", yaxis_title="Rejection Rate")
         st.plotly_chart(fig,use_container_width=True)
-        def Trend(supp,slopes,time,vendor):
+
+        def Trend(supp,slopes,time,inp):
             down_flag=0
             month=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
             up_flag=0
@@ -124,15 +126,41 @@ if selected=='Home':
                         neutral_flag=1
                     if slopes[i][j]<0:
                         mon.append(time[i])
-                    if slopes[i][j]>0:
-                        mon.append(time[i])
+            ne_flag=0
             if neutral_flag==1 and up_flag ==0 and down_flag==0:
-                st.write("Vendor {0} has no irregularity ".format(vendor))
+                st.write("Vendor has no irregularity detected")
+                ne_flag=1
             elif up_flag==0:
-                st.write("Vendor {0} have a upward trend in the month {1}".format(vendor,month[mon[0]-1]))
+                st.write("Vendor {0} have a upward trend in the month ".format(inp))
             elif down_flag==0:
-                st.write("Vendor {0} have an downward trend in the month {1}".format(vendor,month[mon[0]-1]) )
-        def Slope(df,vendor):
+                st.write("Vendor {0} have an downward trend in the month ".format(inp))
+            if ne_flag==0:    
+                cycle_len=2
+                flag=0
+                count=0
+                l=[]
+                for i in range(len(slopes)):
+                    for j in range(len(slopes[i])):
+                        if slopes[i][j]>=0:
+                            count+=1
+                            if count>=cycle_len:
+                                if flag!=1:
+                                    l.append(time[j])
+                                    l.append(time[j-1])
+                                    flag=1       
+                                else :
+                                    l.append(time[j])
+                                    flag==1
+                        else:
+                            flag=0
+                            count=0
+                if (len(l)!=0):
+                    st.write("The deviation for {0} are in the months of:".format(inp))
+                    l=list(set(l))
+                    for i in l:
+                        st.write(month[i-1])
+
+        def Slope(df,inp):
             supp=list(df['VENDOR_ID'].unique())
             slopes=[]
             time=list(df['TRANSACTION_DATE'].dt.month)
@@ -140,20 +168,28 @@ if selected=='Home':
                 y=list(df.loc[df['VENDOR_ID']==i]['REJECTION_RATE'])
                 slope=[0.0]
                 N=len(y)
-                print("y=",y)
                 x=[i for i in range(1,N+1)]
                 for i in range(N):
                     if i+1<N:
                         slope.append((y[i+1]-y[i])/(x[i+1]-x[i]))
                 slopes.append(slope)
-            Trend(supp,slopes,time,vendor)
+            Trend(supp,slopes,time,inp)
+        #     print(y)
             return slopes
+        
         Slope(df1,inp1)
         item_list=list(rej_df['ITEM_ID'].unique())
         inp3=st.selectbox(label="Item",options=item_list)
         lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
         inp4=st.selectbox(label="Item",options=lists)
-        temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)]
+        search_2=st.checkbox("Advance search")
+        if search_2:
+            date_3=pd.to_datetime(st.date_input("Start Date"))
+            date_4=pd.to_datetime(st.date_input("End Date"))
+            temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        else:
+            temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE']).sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        
         fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
             xaxis_title="Date", yaxis_title="Rejection Rate")
         st.plotly_chart(fig,use_container_width=True)
@@ -173,3 +209,4 @@ if selected=='Home':
     else:
         st.warning('Upload a File.')
 
+        
