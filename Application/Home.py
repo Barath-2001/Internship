@@ -96,13 +96,14 @@ if selected=='Home':
             diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
         inp2=st.selectbox(label="Item", options=diction[inp1])
         search=st.checkbox("Advance Search") 
+        df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        start_1=list(df1.head(1)['TRANSACTION_DATE'])
+        end_1=list(df1.tail(1)['TRANSACTION_DATE']) 
         if search:
-            date_1=pd.to_datetime(st.date_input("Start Date"))
-            date_2=pd.to_datetime(st.date_input("End Date"))
+            date_1=pd.to_datetime(st.date_input("Start date",start_1[0]))
+            date_2=pd.to_datetime(st.date_input("End date",end_1[0]))
             df1= rej_df.loc[((rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2))&(rej_df['TRANSACTION_DATE']>=date_1) &(rej_df['TRANSACTION_DATE']<=date_2) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
-        else:
-            D=0
-            df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        
         fig ,ax=plt.subplots()
         fig = plt.figure(figsize=(12, 4))
         rej_df.loc[rej_df['VENDOR_ID']==inp1].sort_values(by=['TRANSACTION_DATE']).groupby(['ITEM_ID'])['REJECTION_RATE'].plot(figsize=(12,6),legend=True)
@@ -128,12 +129,12 @@ if selected=='Home':
                         mon.append(time[i])
             ne_flag=0
             if neutral_flag==1 and up_flag ==0 and down_flag==0:
-                st.write("Vendor has no irregularity detected")
+                st.write("Vendor {0} has no irregularity detected".format(inp))
                 ne_flag=1
             elif up_flag==0:
-                st.write("Vendor {0} have a upward trend in the month ".format(inp))
+                st.write("Vendor {0} have a upward trend  ".format(inp))
             elif down_flag==0:
-                st.write("Vendor {0} have an downward trend in the month ".format(inp))
+                st.write("Vendor {0} have an downward trend".format(inp))
             if ne_flag==0:    
                 cycle_len=2
                 flag=0
@@ -181,15 +182,16 @@ if selected=='Home':
         item_list=list(rej_df['ITEM_ID'].unique())
         inp3=st.selectbox(label="Item",options=item_list)
         lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
-        inp4=st.selectbox(label="Item",options=lists)
+        inp4=st.selectbox(label="Vendor",options=lists)
+        temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         search_2=st.checkbox("Advance search")
+        start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
+        end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
         if search_2:
-            date_3=pd.to_datetime(st.date_input("Start Date"))
-            date_4=pd.to_datetime(st.date_input("End Date"))
+            date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
+            date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
             temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
-        else:
-            temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE']).sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
-        
+            
         fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
             xaxis_title="Date", yaxis_title="Rejection Rate")
         st.plotly_chart(fig,use_container_width=True)
@@ -208,5 +210,3 @@ if selected=='Home':
         # st.plotly_chart(fig,use_container_width=True)
     else:
         st.warning('Upload a File.')
-
-        
