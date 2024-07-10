@@ -210,3 +210,5 @@ if selected=='Home':
         # st.plotly_chart(fig,use_container_width=True)
     else:
         st.warning('Upload a File.')
+
+        
