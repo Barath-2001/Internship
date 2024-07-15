@@ -22,6 +22,7 @@ if selected=='Home':
     if file is not None:
         po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
         st.success('File upload successfully.')
+        st.success("Items with no ID are omitted")
         df_main=po_receiving_data.copy()                                                                                            
         df_main['ITEM_ID'].fillna(-1,inplace=True)                                                                                                                                                                                                 
         df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce')               
@@ -33,7 +34,7 @@ if selected=='Home':
         st.write(acpt_df.sample(5).reset_index(drop=True)) 
         acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
         acpt_df.set_index('MONTH',inplace=True)     
-        rej_df=df_main.loc[ (df_main['ITEM_ID']!=-1) & (df_main['TRANSACTION_TYPE']=='REJECT')  ].copy()
+        rej_df=df_main.loc[ (df_main['ITEM_ID']!=-1) & (df_main['TRANSACTION_TYPE']=='REJECT') ].copy()
         rej_df.reset_index(drop=True, inplace=True)
         st.header("Rejection data")
         st.write(rej_df.sample(5).reset_index(drop=True))
@@ -190,7 +191,7 @@ if selected=='Home':
         if search_2:
             date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
             date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
-            temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+            temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
             
         fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
             xaxis_title="Date", yaxis_title="Rejection Rate")
