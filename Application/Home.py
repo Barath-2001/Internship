@@ -12,17 +12,23 @@ import datetime
 st.set_page_config(page_title = 'Application')
 st.title("Supplier Analysis")
 
+
 with st.sidebar:
     selected=option_menu(
         menu_title='Main Menu',
         options=["Home"]
     )
+    
 if selected=='Home':
     file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
     if file is not None:
-        po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
-        st.success('File upload successfully.')
-        st.success("Items with no ID are omitted")
+        @st.cache_data
+        def read_data(file):
+            po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
+            st.success('File upload successfully.')
+            st.success("Items with no ID are omitted") 
+            return po_receiving_data
+        po_receiving_data=read_data(file)
         df_main=po_receiving_data.copy()                                                                                            
         df_main['ITEM_ID'].fillna(-1,inplace=True)                                                                                                                                                                                                 
         df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce')               
@@ -95,15 +101,19 @@ if selected=='Home':
         diction={}
         for i in supp1:
             diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
-        inp2=st.selectbox(label="Item", options=diction[inp1])
+        #inp2=st.selectbox(label="Item", options=diction[inp1])
+
+        inp2 = st.multiselect("Item",diction[inp1],diction[inp1][0])
+        # st.write(inp2)
+        # st.write(rej_df.loc[(rej_df['VENDOR_ID']==inp1)&(rej_df['ITEM_ID'].isin(inp2))])
         search=st.checkbox("Advance Search") 
-        df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1)&(rej_df['ITEM_ID'].isin(inp2))].sort_values(by=['ITEM_ID','TRANSACTION_DATE','REJECTION_RATE'])
         start_1=list(df1.head(1)['TRANSACTION_DATE'])
         end_1=list(df1.tail(1)['TRANSACTION_DATE']) 
         if search:
             date_1=pd.to_datetime(st.date_input("Start date",start_1[0]))
             date_2=pd.to_datetime(st.date_input("End date",end_1[0]))
-            df1= rej_df.loc[((rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID']==inp2))&(rej_df['TRANSACTION_DATE']>=date_1) &(rej_df['TRANSACTION_DATE']<=date_2) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+            df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID'].isin(inp2)) &(rej_df['TRANSACTION_DATE']>=date_1) &(rej_df['TRANSACTION_DATE']<=date_2) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         
         fig ,ax=plt.subplots()
         fig = plt.figure(figsize=(12, 4))
@@ -180,23 +190,23 @@ if selected=='Home':
             return slopes
         
         Slope(df1,inp1)
-        item_list=list(rej_df['ITEM_ID'].unique())
-        inp3=st.selectbox(label="Item",options=item_list)
-        lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
-        inp4=st.selectbox(label="Vendor",options=lists)
-        temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
-        search_2=st.checkbox("Advance search")
-        start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
-        end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
-        if search_2:
-            date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
-            date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
-            temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        # item_list=list(rej_df['ITEM_ID'].unique())
+        # inp3=st.selectbox(label="Item",options=item_list)
+        # lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
+        # inp4=st.selectbox(label="Vendor",options=lists)
+        # temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        # search_2=st.checkbox("Advance search")
+        # start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
+        # end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
+        # if search_2:
+        #     date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
+        #     date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
+        #     temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
             
-        fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
-            xaxis_title="Date", yaxis_title="Rejection Rate")
-        st.plotly_chart(fig,use_container_width=True)
-        Slope(temp_df,inp4)
+        # fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
+        #     xaxis_title="Date", yaxis_title="Rejection Rate")
+        # st.plotly_chart(fig,use_container_width=True)
+        # Slope(temp_df,inp4)
         # df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
         # fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
         #     xaxis_title="Date", yaxis_title="Rejection Rate")
@@ -210,6 +220,5 @@ if selected=='Home':
         # xaxis_title="Date", yaxis_title="Rejection Rate")
         # st.plotly_chart(fig,use_container_width=True)
     else:
-        st.warning('Upload a File.')
-
+        st.warning('Upload a File.') 
         
