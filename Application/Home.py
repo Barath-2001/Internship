@@ -108,12 +108,12 @@ if selected=='Home':
         # st.write(rej_df.loc[(rej_df['VENDOR_ID']==inp1)&(rej_df['ITEM_ID'].isin(inp2))])
         search=st.checkbox("Advance Search") 
         df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1)&(rej_df['ITEM_ID'].isin(inp2))].sort_values(by=['ITEM_ID','TRANSACTION_DATE','REJECTION_RATE'])
-        start_1=list(df1.head(1)['TRANSACTION_DATE'])
-        end_1=list(df1.tail(1)['TRANSACTION_DATE']) 
+        start_1=list(df1.sort_values(by=['TRANSACTION_DATE']).head(1)['TRANSACTION_DATE'])
+        end_1=list(df1.sort_values(by=['TRANSACTION_DATE']).tail(1)['TRANSACTION_DATE']) 
         if search:
             date_1=pd.to_datetime(st.date_input("Start date",start_1[0]))
             date_2=pd.to_datetime(st.date_input("End date",end_1[0]))
-            df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID'].isin(inp2)) &(rej_df['TRANSACTION_DATE']>=date_1) &(rej_df['TRANSACTION_DATE']<=date_2) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+            df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID'].isin(inp2)) &(rej_df['TRANSACTION_DATE']>=date_1) &(rej_df['TRANSACTION_DATE']<=date_2) ].sort_values(by=['ITEM_ID','TRANSACTION_DATE','REJECTION_RATE'])
         
         fig ,ax=plt.subplots()
         fig = plt.figure(figsize=(12, 4))
