@@ -29,8 +29,9 @@ if selected=='Home':
             return po_receiving_data
         po_receiving_data=read_data(file)
         df_main=po_receiving_data.copy()                                                                                            
-        df_main['ITEM_ID'].fillna(-1,inplace=True)                                                                                                                                                                                                 
-        df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce')               
+        df_main['ITEM_ID'].fillna(-1,inplace=True)
+        if df_main['ITEM_ID'].dtype != 'O':
+            df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce')               
         acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
         a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
         acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
