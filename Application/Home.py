@@ -197,7 +197,7 @@ if selected=='Home':
             diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
         # lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
         # inp4=st.selectbox(label="Vendor",options=lists)
-        inp4 = st.multiselect("Vendor",diction[inp1],diction[inp1][0])
+        inp4 = st.multiselect("Vendor",diction[inp3],diction[inp3][0])
         df1= rej_df.loc[(rej_df['ITEM_ID']==inp3)&(rej_df['VENDOR_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
         # temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         # search_2=st.checkbox("Advance search")
