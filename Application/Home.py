@@ -192,10 +192,15 @@ if selected=='Home':
         # Slope(df1,inp1)
         item_list=list(rej_df['ITEM_ID'].unique())
         inp3=st.selectbox(label="Item",options=item_list)
-        lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
-        inp4=st.selectbox(label="Vendor",options=lists)
-        temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
-        search_2=st.checkbox("Advance search")
+        diction={}
+        for i in item_list:
+            diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
+        # lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
+        # inp4=st.selectbox(label="Vendor",options=lists)
+        inp4 = st.multiselect("Vendor",diction[inp1],diction[inp1][0])
+        df1= rej_df.loc[(rej_df['ITEM_ID']==inp3)&(rej_df['VENDOR_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
+        # temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        # search_2=st.checkbox("Advance search")
         start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
         end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
         if search_2:
