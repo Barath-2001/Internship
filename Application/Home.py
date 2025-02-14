@@ -147,7 +147,7 @@ if selected=='Home':
             elif down_flag==0:
                 st.write("Vendor {0} have an downward trend".format(inp))
             if ne_flag==0:    
-                cycle_len=2
+                cycle_len=3
                 flag=0
                 count=0
                 l=[]
