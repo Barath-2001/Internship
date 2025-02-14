@@ -88,7 +88,7 @@ if selected=='Home':
         # for i ,v in enumerate(value[0:5]):
         #     plt.text(i,v,str(v),ha='center')
         # st.pyplot(fig)
-        # list1=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY' ].sum())
+        list1=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY' ].sum())
         acpt={}
         for i,j in list1.items():
             acpt[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1])]['ACTUAL_QUANTITY'].sum()
