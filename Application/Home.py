@@ -28,7 +28,9 @@ if selected=='Home':
             # st.success("Items with no ID are omitted") 
             return po_receiving_data
         po_receiving_data=read_data(file)
-        df_main=po_receiving_data.copy()                                                                                            
+        df_main=po_receiving_data.copy()   
+        st.title("Data)
+        st.write(df_main.sample(7).reset_index(drop=True))
         df_main['ITEM_ID'].fillna(-1,inplace=True)
         if df_main['ITEM_ID'].dtype != 'O':
             df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce')               
@@ -36,14 +38,14 @@ if selected=='Home':
         a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
         acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
         acpt_df.reset_index(drop=True,inplace=True)  
-        st.header("Accepted data")
-        st.write(acpt_df.sample(5).reset_index(drop=True)) 
+        # st.header("Accepted data")
+        # st.write(acpt_df.sample(5).reset_index(drop=True)) 
         acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
         acpt_df.set_index('MONTH',inplace=True)     
         rej_df=df_main.loc[ (df_main['ITEM_ID']!=-1) & (df_main['TRANSACTION_TYPE']=='REJECT') ].copy()
         rej_df.reset_index(drop=True, inplace=True)
-        st.header("Rejection data")
-        st.write(rej_df.sample(5).reset_index(drop=True))
+        # st.header("Rejection data")
+        # st.write(rej_df.sample(5).reset_index(drop=True))
         rej_df['REJECTION_RATE']=0.0                                            
         rej_df.reset_index(drop=True, inplace=True)                                                                                 
         rej_df['TRANSACTION_TYPE']='REJECT'                                              
@@ -52,41 +54,41 @@ if selected=='Home':
         rej_df.reset_index(drop=True,inplace=True)       
         rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
         rej_df.set_index('MONTH',inplace=True)   
-        st.header("Analysis")  
+        # st.header("Analysis")  
         typ=list(df_main['TRANSACTION_TYPE'].unique())
         qnt=[]
         for i in typ:
             qnt.append(df_main.loc[(df_main['TRANSACTION_TYPE']==i)& (df_main['ITEM_ID']!=-1)]['ACTUAL_QUANTITY'].sum())
-        fig,ax=plt.subplots(figsize=(18,6))
-        plt.bar(typ,qnt)
-        for i ,v in enumerate(qnt):
-            plt.text(i,v,str(v),ha='center')
-        plt.xlabel("Transaction Type")
-        plt.ylabel("Quantity")
-        st.pyplot(fig)
-        key=['ACCEPTED','REJECTED']
-        values=[]
-        values.append(acpt_df['ACTUAL_QUANTITY'].sum())
-        values.append(rej_df['ACTUAL_QUANTITY'].sum())    
-        fig1, ax1 = plt.subplots(figsize=(10,5))
-        ax1.pie(values,labels=key,autopct="%1.1f%%")
-        ax1.axis('equal')  
-        plt.legend()
-        st.pyplot(fig1)
-        rej=dict(rej_df.groupby(["VENDOR_ID"])["ACTUAL_QUANTITY"].sum())
-        rej_vendor=dict(sorted(rej.items(), key=lambda item: item[1],reverse=True))
-        key=list(rej_vendor.keys())
-        value=list(rej_vendor.values())
-        key=[str(i) for i in key]
-        fig = plt.figure(figsize = (10, 5))
-        plt.bar(key[0:5],value[0:5])
-        plt.xlabel("Vendor ")
-        plt.ylabel("Quantity ")
-        plt.title("Top 5 Vendor with highest rejection")
-        for i ,v in enumerate(value[0:5]):
-            plt.text(i,v,str(v),ha='center')
-        st.pyplot(fig)
-        list1=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY' ].sum())
+        # fig,ax=plt.subplots(figsize=(18,6))
+        # plt.bar(typ,qnt)
+        # for i ,v in enumerate(qnt):
+        #     plt.text(i,v,str(v),ha='center')
+        # plt.xlabel("Transaction Type")
+        # plt.ylabel("Quantity")
+        # st.pyplot(fig)
+        # key=['ACCEPTED','REJECTED']
+        # values=[]
+        # values.append(acpt_df['ACTUAL_QUANTITY'].sum())
+        # values.append(rej_df['ACTUAL_QUANTITY'].sum())    
+        # fig1, ax1 = plt.subplots(figsize=(10,5))
+        # ax1.pie(values,labels=key,autopct="%1.1f%%")
+        # ax1.axis('equal')  
+        # plt.legend()
+        # st.pyplot(fig1)
+        # rej=dict(rej_df.groupby(["VENDOR_ID"])["ACTUAL_QUANTITY"].sum())
+        # rej_vendor=dict(sorted(rej.items(), key=lambda item: item[1],reverse=True))
+        # key=list(rej_vendor.keys())
+        # value=list(rej_vendor.values())
+        # key=[str(i) for i in key]
+        # fig = plt.figure(figsize = (10, 5))
+        # plt.bar(key[0:5],value[0:5])
+        # plt.xlabel("Vendor ")
+        # plt.ylabel("Quantity ")
+        # plt.title("Top 5 Vendor with highest rejection")
+        # for i ,v in enumerate(value[0:5]):
+        #     plt.text(i,v,str(v),ha='center')
+        # st.pyplot(fig)
+        # list1=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY' ].sum())
         acpt={}
         for i,j in list1.items():
             acpt[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1])]['ACTUAL_QUANTITY'].sum()
