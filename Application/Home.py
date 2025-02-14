@@ -189,7 +189,7 @@ if selected=='Home':
         #     print(y)
             return slopes
         
-        Slope(df1,inp1)
+        # Slope(df1,inp1)
         item_list=list(rej_df['ITEM_ID'].unique())
         inp3=st.selectbox(label="Item",options=item_list)
         lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
