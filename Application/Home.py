@@ -96,31 +96,31 @@ if selected=='Home':
             l.append((row['ACTUAL_QUANTITY']/tol)*100)
         del(rej_df['REJECTION_RATE'])
         rej_df.insert(5,'REJECTION_RATE',l)
-        supp1=list(rej_df['VENDOR_ID'].unique())
-        inp1=st.selectbox(label="Vendor:", options=supp1)
-        diction={}
-        for i in supp1:
-            diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
-        #inp2=st.selectbox(label="Item", options=diction[inp1])
+        # supp1=list(rej_df['VENDOR_ID'].unique())
+        # inp1=st.selectbox(label="Vendor:", options=supp1)
+        # diction={}
+        # for i in supp1:
+        #     diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
+        # #inp2=st.selectbox(label="Item", options=diction[inp1])
 
-        inp2 = st.multiselect("Item",diction[inp1],diction[inp1][0])
-        # st.write(inp2)
-        # st.write(rej_df.loc[(rej_df['VENDOR_ID']==inp1)&(rej_df['ITEM_ID'].isin(inp2))])
-        search=st.checkbox("Advance Search") 
-        df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1)&(rej_df['ITEM_ID'].isin(inp2))].sort_values(by=['ITEM_ID','TRANSACTION_DATE','REJECTION_RATE'])
-        start_1=list(df1.sort_values(by=['TRANSACTION_DATE']).head(1)['TRANSACTION_DATE'])
-        end_1=list(df1.sort_values(by=['TRANSACTION_DATE']).tail(1)['TRANSACTION_DATE']) 
-        if search:
-            date_1=pd.to_datetime(st.date_input("Start date",start_1[0]))
-            date_2=pd.to_datetime(st.date_input("End date",end_1[0]))
-            df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID'].isin(inp2)) &(rej_df['TRANSACTION_DATE']>=date_1) &(rej_df['TRANSACTION_DATE']<=date_2) ].sort_values(by=['ITEM_ID','TRANSACTION_DATE','REJECTION_RATE'])
+        # inp2 = st.multiselect("Item",diction[inp1],diction[inp1][0])
+        # # st.write(inp2)
+        # # st.write(rej_df.loc[(rej_df['VENDOR_ID']==inp1)&(rej_df['ITEM_ID'].isin(inp2))])
+        # search=st.checkbox("Advance Search") 
+        # df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1)&(rej_df['ITEM_ID'].isin(inp2))].sort_values(by=['ITEM_ID','TRANSACTION_DATE','REJECTION_RATE'])
+        # start_1=list(df1.sort_values(by=['TRANSACTION_DATE']).head(1)['TRANSACTION_DATE'])
+        # end_1=list(df1.sort_values(by=['TRANSACTION_DATE']).tail(1)['TRANSACTION_DATE']) 
+        # if search:
+        #     date_1=pd.to_datetime(st.date_input("Start date",start_1[0]))
+        #     date_2=pd.to_datetime(st.date_input("End date",end_1[0]))
+        #     df1= rej_df.loc[(rej_df['VENDOR_ID']==inp1) & (rej_df['ITEM_ID'].isin(inp2)) &(rej_df['TRANSACTION_DATE']>=date_1) &(rej_df['TRANSACTION_DATE']<=date_2) ].sort_values(by=['ITEM_ID','TRANSACTION_DATE','REJECTION_RATE'])
         
-        fig ,ax=plt.subplots()
-        fig = plt.figure(figsize=(12, 4))
-        rej_df.loc[rej_df['VENDOR_ID']==inp1].sort_values(by=['TRANSACTION_DATE']).groupby(['ITEM_ID'])['REJECTION_RATE'].plot(figsize=(12,6),legend=True)
-        fig = px.line(df1, x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='ITEM_ID', markers=True).update_layout(
-            xaxis_title="Date", yaxis_title="Rejection Rate")
-        st.plotly_chart(fig,use_container_width=True)
+        # fig ,ax=plt.subplots()
+        # fig = plt.figure(figsize=(12, 4))
+        # rej_df.loc[rej_df['VENDOR_ID']==inp1].sort_values(by=['TRANSACTION_DATE']).groupby(['ITEM_ID'])['REJECTION_RATE'].plot(figsize=(12,6),legend=True)
+        # fig = px.line(df1, x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='ITEM_ID', markers=True).update_layout(
+        #     xaxis_title="Date", yaxis_title="Rejection Rate")
+        # st.plotly_chart(fig,use_container_width=True)
 
         def Trend(supp,slopes,time,inp):
             down_flag=0
@@ -207,10 +207,10 @@ if selected=='Home':
             xaxis_title="Date", yaxis_title="Rejection Rate")
         st.plotly_chart(fig,use_container_width=True)
         Slope(temp_df,inp4)
-        df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
-        fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
-            xaxis_title="Date", yaxis_title="Rejection Rate")
-        st.plotly_chart(fig,use_container_width=True)
+        # df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
+        # fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
+        #     xaxis_title="Date", yaxis_title="Rejection Rate")
+        # st.plotly_chart(fig,use_container_width=True)
         # start=pd.to_datetime(str(st.date_input("Enter start date", datetime.date(2023, 6, 1))))
         # end = pd.to_datetime(str(st.date_input("Enter end date", datetime.date(2023, 8, 1))))
         # st.write("The dates are :",end-start)
