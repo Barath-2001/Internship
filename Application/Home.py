@@ -29,7 +29,7 @@ if selected=='Home':
             return po_receiving_data
         po_receiving_data=read_data(file)
         df_main=po_receiving_data.copy()   
-        st.title("Data)
+        st.title("Data")
         st.write(df_main.sample(7).reset_index(drop=True))
         df_main['ITEM_ID'].fillna(-1,inplace=True)
         if df_main['ITEM_ID'].dtype != 'O':
