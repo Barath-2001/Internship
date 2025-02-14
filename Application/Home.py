@@ -203,10 +203,10 @@ if selected=='Home':
         # search_2=st.checkbox("Advance search")
         start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
         end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
-        if search_2:
-            date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
-            date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
-            temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
+        # if search_2:
+        #     date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
+        #     date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
+        #     temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
             
         fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
             xaxis_title="Date", yaxis_title="Rejection Rate")
