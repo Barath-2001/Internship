@@ -93,7 +93,7 @@ if selected=='Home':
         rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
         tol_qn={}
         for i,j in rej_qn.items():
-            tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1])]['ACTUAL_QUANTITY'].sum()
+            tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1]) & (df_main['ITEM_ID']=='RECEIVE')]['ACTUAL_QUANTITY'].sum()
         rej_rate=[]
         for index, row in rej_df.iterrows():
             tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
