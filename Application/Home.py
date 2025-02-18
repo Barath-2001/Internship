@@ -98,7 +98,7 @@ if selected=='Home':
         for index, row in rej_df.iterrows():
             tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
             rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
-        del(rej_df['REJECTION_RATE'])
+        # del(rej_df['REJECTION_RATE'])
         rej_df.insert(5,'REJECTION_RATE',rej_rate)
         # supp1=list(rej_df['VENDOR_ID'].unique())
         # inp1=st.selectbox(label="Vendor:", options=supp1)
