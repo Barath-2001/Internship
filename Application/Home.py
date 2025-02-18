@@ -91,12 +91,12 @@ if selected=='Home':
         #     plt.text(i,v,str(v),ha='center')
         # st.pyplot(fig)
         rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
-        tot_qn={}
+        tol_qn={}
         for i,j in rej_qn.items():
             tot_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1])]['ACTUAL_QUANTITY'].sum()
         rej_rate=[]
         for index, row in rej_df.iterrows():
-            tol=acpt[(row['VENDOR_ID'],row['ITEM_ID'])]
+            tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
             rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
         del(rej_df['REJECTION_RATE'])
         rej_df.insert(5,'REJECTION_RATE',rej_rate)
