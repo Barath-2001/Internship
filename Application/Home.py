@@ -33,7 +33,8 @@ if selected=='Home':
         st.write(df_main.sample(7).reset_index(drop=True))
         df_main['ITEM_ID'].fillna(-1,inplace=True)
         if df_main['ITEM_ID'].dtype != 'O':
-            df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce')               
+            df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce') 
+        df_main['TRANSACTION_DATE']=pd.to_datetime(df_main['TRANSACTION_DATE'].dt.normalize()).copy()
         acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
         a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
         acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
@@ -42,16 +43,17 @@ if selected=='Home':
         # st.write(acpt_df.sample(5).reset_index(drop=True)) 
         acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
         acpt_df.set_index('MONTH',inplace=True)     
-        rej_df=df_main.loc[ (df_main['ITEM_ID']!=-1) & (df_main['TRANSACTION_TYPE']=='REJECT') ].copy()
+        rej_df = df_main.loc[(df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT'))].copy()
+        rej_df=rej_df.sort_values(by=['TRANSACTION_DATE']).copy()
         rej_df.reset_index(drop=True, inplace=True)
         # st.header("Rejection data")
         # st.write(rej_df.sample(5).reset_index(drop=True))
-        rej_df['REJECTION_RATE']=0.0                                            
-        rej_df.reset_index(drop=True, inplace=True)                                                                                 
-        rej_df['TRANSACTION_TYPE']='REJECT'                                              
-        a=pd.to_datetime(rej_df['TRANSACTION_DATE'],errors='coerce')                                                                                
-        rej_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                         
-        rej_df.reset_index(drop=True,inplace=True)       
+        # rej_df['REJECTION_RATE']=0.0                                            
+        # rej_df.reset_index(drop=True, inplace=True)                                                                                 
+        # rej_df['TRANSACTION_TYPE']='REJECT'                                              
+        # a=pd.to_datetime(rej_df['TRANSACTION_DATE'],errors='coerce')                                                                                
+        # rej_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                         
+        # rej_df.reset_index(drop=True,inplace=True)       
         rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
         rej_df.set_index('MONTH',inplace=True)   
         # st.header("Analysis")  
@@ -88,16 +90,16 @@ if selected=='Home':
         # for i ,v in enumerate(value[0:5]):
         #     plt.text(i,v,str(v),ha='center')
         # st.pyplot(fig)
-        list1=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY' ].sum())
-        acpt={}
-        for i,j in list1.items():
-            acpt[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1])]['ACTUAL_QUANTITY'].sum()
-        l=[]
+        rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
+        tot_qn={}
+        for i,j in rej_qn.items():
+            tot_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1])]['ACTUAL_QUANTITY'].sum()
+        rej_rate=[]
         for index, row in rej_df.iterrows():
             tol=acpt[(row['VENDOR_ID'],row['ITEM_ID'])]
-            l.append((row['ACTUAL_QUANTITY']/tol)*100)
+            rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
         del(rej_df['REJECTION_RATE'])
-        rej_df.insert(5,'REJECTION_RATE',l)
+        rej_df.insert(5,'REJECTION_RATE',rej_rate)
         # supp1=list(rej_df['VENDOR_ID'].unique())
         # inp1=st.selectbox(label="Vendor:", options=supp1)
         # diction={}
