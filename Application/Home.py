@@ -7,6 +7,7 @@ import plotly.express as px
 from streamlit_option_menu import option_menu
 import openpyxl
 import datetime
+import time
 
 
 st.set_page_config(page_title = 'Application')
