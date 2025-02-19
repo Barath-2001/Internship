@@ -19,16 +19,17 @@ with st.sidebar:
         options=["Home"]
     )
     file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
+
+@st.cache_data
+def read_data(file):
+    po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
+    st.toast('File upload successfully.', icon="✅")
+            
+            # st.success("Items with no ID are omitted") 
+    return po_receiving_data
     
 if selected=='Home':  
     if file is not None:
-        @st.cache_data
-        def read_data(file):
-            po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
-            st.toast('File upload successfully.', icon="✅")
-            
-            # st.success("Items with no ID are omitted") 
-            return po_receiving_data
         po_receiving_data=read_data(file)
         df_main=po_receiving_data.copy()   
         st.title("Data")
