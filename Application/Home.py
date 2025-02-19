@@ -26,7 +26,7 @@ if selected=='Home':
         def read_data(file):
             po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
             st.toast('File upload successfully.', icon="✅")
-            time.sleep(6)
+            
             # st.success("Items with no ID are omitted") 
             return po_receiving_data
         po_receiving_data=read_data(file)
