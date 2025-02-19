@@ -22,7 +22,7 @@ with st.sidebar:
     
 if selected=='Home':  
     if file is not None:
-        # @st.cache_data
+        @st.cache_data
         def read_data(file):
             po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
             st.toast('File upload successfully.', icon="✅")
