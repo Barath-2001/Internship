@@ -35,7 +35,7 @@ if selected=='Home':
         if df_main['ITEM_ID'].dtype != 'O':
             df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce') 
         st.write(df_main.dtypes)
-        df_main['TRANSACTION_DATE']=pd.to_datetime(df_main['TRANSACTION_DATE'].dt.normalize()).copy()
+        df_main['TRANSACTION_DATE']=pd.to_datetime(df_main['TRANSACTION_DATE']).dt.normalize().copy()
         acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
         a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
         acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
