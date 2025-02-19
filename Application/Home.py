@@ -18,9 +18,10 @@ with st.sidebar:
         menu_title='Main Menu',
         options=["Home"]
     )
+    file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
     
 if selected=='Home':
-    file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
+    
     if file is not None:
         @st.cache_data
         def read_data(file):
