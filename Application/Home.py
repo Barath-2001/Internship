@@ -24,10 +24,8 @@ with st.sidebar:
 def read_data(file):
     po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
     st.toast('File upload successfully.', icon="✅")
-            
             # st.success("Items with no ID are omitted") 
-    return po_receiving_data
-    
+    return po_receiving_data    
 if selected=='Home':  
     if file is not None:
         po_receiving_data=read_data(file)
