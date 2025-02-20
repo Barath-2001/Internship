@@ -29,7 +29,7 @@ def read_data(file):
 if selected=='Home':  
     if file is not None:
         po_receiving_data=read_data(file)
-        time.toast('File upload successfully.', icon="✅")
+        st.toast('File upload successfully.', icon="✅")
         df_main=po_receiving_data.copy()   
         st.title("Data")
         st.write(df_main.sample(7).reset_index(drop=True))
