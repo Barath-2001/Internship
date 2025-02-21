@@ -20,7 +20,8 @@ with st.sidebar:
     )
     file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
 
-@st.cache_data
+
+@st.cache_resource
 def read_data(file):
     po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
 
