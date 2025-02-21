@@ -30,15 +30,15 @@ def read_data(file):
 @st.cache_resourse
 def Rejection_Rate(df_main,rej_df):
     rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
-        tol_qn={}
-        for i,j in rej_qn.items():
-            tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1]) & (df_main['TRANSACTION_TYPE']=='RECEIVE')]['ACTUAL_QUANTITY'].sum()
-        rej_rate=[]
-        for index, row in rej_df.iterrows():
-            tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
-            rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
+    tol_qn={}
+    for i,j in rej_qn.items():
+        tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1]) & (df_main['TRANSACTION_TYPE']=='RECEIVE')]['ACTUAL_QUANTITY'].sum()
+    rej_rate=[]
+    for index, row in rej_df.iterrows():
+        tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
+        rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
         # del(rej_df['REJECTION_RATE'])
-        return rej_rate
+    return rej_rate
     
 if selected=='Home':  
     if file is not None:
