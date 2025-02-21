@@ -55,23 +55,23 @@ def read_data(file):
         tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
         rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
 
-    return df_main,rej_df,acpt_df    
-@st.cache_resource
-def Rejection_Rate(df_main,rej_df):
-    rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
-    tol_qn={}
-    for i,j in rej_qn.items():
-        tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1]) & (df_main['TRANSACTION_TYPE']=='RECEIVE')]['ACTUAL_QUANTITY'].sum()
-    rej_rate=[]
-    for index, row in rej_df.iterrows():
-        tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
-        rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
-        # del(rej_df['REJECTION_RATE'])
-    return rej_rate
+    return df_main,rej_df,acpt_df,rej_rate    
+# @st.cache_resource
+# def Rejection_Rate(df_main,rej_df):
+#     rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
+#     tol_qn={}
+#     for i,j in rej_qn.items():
+#         tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1]) & (df_main['TRANSACTION_TYPE']=='RECEIVE')]['ACTUAL_QUANTITY'].sum()
+#     rej_rate=[]
+#     for index, row in rej_df.iterrows():
+#         tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
+#         rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
+#         # del(rej_df['REJECTION_RATE'])
+#     return rej_rate
     
 if selected=='Home':  
     if file is not None:
-        df_main,rej_df,acpt_df=read_data(file)
+        df_main,rej_df,acpt_df,rej_rate=read_data(file)
         # st.toast('File upload successfully.', icon="✅")
         # df_main=po_receiving_data.copy()   
         # st.title("Data")
@@ -136,7 +136,7 @@ if selected=='Home':
         # for i ,v in enumerate(value[0:5]):
         #     plt.text(i,v,str(v),ha='center')
         # st.pyplot(fig)
-        rej_rate=Rejection_Rate(df_main,rej_df)
+        # rej_rate=Rejection_Rate(df_main,rej_df)
         rej_df.insert(5,'REJECTION_RATE',rej_rate)
         # supp1=list(rej_df['VENDOR_ID'].unique())
         # inp1=st.selectbox(label="Vendor:", options=supp1)
