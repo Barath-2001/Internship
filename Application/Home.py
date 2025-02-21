@@ -25,7 +25,37 @@ with st.sidebar:
 def read_data(file):
     po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
             # st.success("Items with no ID are omitted") 
-    return po_receiving_data    
+    # po_receiving_data=read_data(file)
+    st.toast('File upload successfully.', icon="✅")
+    df_main=po_receiving_data.copy()   
+    st.title("Data")
+    st.write(df_main.sample(7).reset_index(drop=True))
+    df_main['ITEM_ID'].fillna(-1,inplace=True)
+    if df_main['ITEM_ID'].dtype != 'O':
+        df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce') 
+        # st.write(df_main.dtypes)
+    df_main['TRANSACTION_DATE']=pd.to_datetime(df_main['TRANSACTION_DATE']).dt.normalize().copy()
+    acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
+    a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
+    acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
+    acpt_df.reset_index(drop=True,inplace=True)  
+    acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
+    acpt_df.set_index('MONTH',inplace=True)     
+    rej_df = df_main.loc[(df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT'))].copy()
+    rej_df=rej_df.sort_values(by=['TRANSACTION_DATE']).copy()
+    rej_df.reset_index(drop=True, inplace=True)
+    rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
+    rej_df.set_index('MONTH',inplace=True)   
+    rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
+    tol_qn={}
+    for i,j in rej_qn.items():
+        tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1]) & (df_main['TRANSACTION_TYPE']=='RECEIVE')]['ACTUAL_QUANTITY'].sum()
+    rej_rate=[]
+    for index, row in rej_df.iterrows():
+        tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
+        rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
+
+    return df_main,rej_df,acpt_df    
 @st.cache_resource
 def Rejection_Rate(df_main,rej_df):
     rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
@@ -41,37 +71,37 @@ def Rejection_Rate(df_main,rej_df):
     
 if selected=='Home':  
     if file is not None:
-        po_receiving_data=read_data(file)
-        st.toast('File upload successfully.', icon="✅")
-        df_main=po_receiving_data.copy()   
-        st.title("Data")
-        st.write(df_main.sample(7).reset_index(drop=True))
-        df_main['ITEM_ID'].fillna(-1,inplace=True)
-        if df_main['ITEM_ID'].dtype != 'O':
-            df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce') 
-        # st.write(df_main.dtypes)
-        df_main['TRANSACTION_DATE']=pd.to_datetime(df_main['TRANSACTION_DATE']).dt.normalize().copy()
-        acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
-        a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
-        acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
-        acpt_df.reset_index(drop=True,inplace=True)  
-        # st.header("Accepted data")
-        # st.write(acpt_df.sample(5).reset_index(drop=True)) 
-        acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
-        acpt_df.set_index('MONTH',inplace=True)     
-        rej_df = df_main.loc[(df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT'))].copy()
-        rej_df=rej_df.sort_values(by=['TRANSACTION_DATE']).copy()
-        rej_df.reset_index(drop=True, inplace=True)
-        # st.header("Rejection data")
-        # st.write(rej_df.sample(5).reset_index(drop=True))
-        # rej_df['REJECTION_RATE']=0.0                                            
-        # rej_df.reset_index(drop=True, inplace=True)                                                                                 
-        # rej_df['TRANSACTION_TYPE']='REJECT'                                              
-        # a=pd.to_datetime(rej_df['TRANSACTION_DATE'],errors='coerce')                                                                                
-        # rej_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                         
-        # rej_df.reset_index(drop=True,inplace=True)       
-        rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
-        rej_df.set_index('MONTH',inplace=True)   
+        df_main,rej_df,acpt_df=read_data(file)
+        # st.toast('File upload successfully.', icon="✅")
+        # df_main=po_receiving_data.copy()   
+        # st.title("Data")
+        # st.write(df_main.sample(7).reset_index(drop=True))
+        # df_main['ITEM_ID'].fillna(-1,inplace=True)
+        # if df_main['ITEM_ID'].dtype != 'O':
+        #     df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce') 
+        # # st.write(df_main.dtypes)
+        # df_main['TRANSACTION_DATE']=pd.to_datetime(df_main['TRANSACTION_DATE']).dt.normalize().copy()
+        # acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
+        # a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
+        # acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
+        # acpt_df.reset_index(drop=True,inplace=True)  
+        # # st.header("Accepted data")
+        # # st.write(acpt_df.sample(5).reset_index(drop=True)) 
+        # acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
+        # acpt_df.set_index('MONTH',inplace=True)     
+        # rej_df = df_main.loc[(df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT'))].copy()
+        # rej_df=rej_df.sort_values(by=['TRANSACTION_DATE']).copy()
+        # rej_df.reset_index(drop=True, inplace=True)
+        # # st.header("Rejection data")
+        # # st.write(rej_df.sample(5).reset_index(drop=True))
+        # # rej_df['REJECTION_RATE']=0.0                                            
+        # # rej_df.reset_index(drop=True, inplace=True)                                                                                 
+        # # rej_df['TRANSACTION_TYPE']='REJECT'                                              
+        # # a=pd.to_datetime(rej_df['TRANSACTION_DATE'],errors='coerce')                                                                                
+        # # rej_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                         
+        # # rej_df.reset_index(drop=True,inplace=True)       
+        # rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
+        # rej_df.set_index('MONTH',inplace=True)   
         # st.header("Analysis")  
         typ=list(df_main['TRANSACTION_TYPE'].unique())
         qnt=[]
