@@ -24,7 +24,7 @@ with st.sidebar:
 @st.cache_resource
 def read_data(file):
     po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
-
+    st.toast('File upload successfully.', icon="✅")
             # st.success("Items with no ID are omitted") 
     return po_receiving_data    
 @st.cache_resource
@@ -43,7 +43,6 @@ def Rejection_Rate(df_main,rej_df):
 if selected=='Home':  
     if file is not None:
         po_receiving_data=read_data(file)
-        st.toast('File upload successfully.', icon="✅")
         df_main=po_receiving_data.copy()   
         st.title("Data")
         st.write(df_main.sample(7).reset_index(drop=True))
