@@ -9,7 +9,6 @@ import openpyxl
 import datetime
 import time
 
-
 st.set_page_config(page_title = 'Application')
 st.title("Supplier Analysis")
 
