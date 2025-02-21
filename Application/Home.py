@@ -205,7 +205,7 @@ if selected=='Home':
         # Slope(df1,inp1)
         item_list=list(rej_df['ITEM_ID'].unique())
         with st.form(key='my_form'):
-            col1, col2, col3 =st.column(3)
+            col1, col2, col3 =st.columns(3)
             with col1:
                 inp3=st.selectbox(label="Item",options=item_list)
                 diction={}
