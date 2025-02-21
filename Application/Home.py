@@ -20,6 +20,37 @@ with st.sidebar:
     )
     file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
 
+@st.fragment
+def first_dropdown():
+    item_list=list(rej_df['ITEM_ID'].unique())
+    selected_category = st.selectbox('Item',key='category_key')
+    return selected_category
+
+@st.fragment
+def second_dropdown(inp3,item_list):
+    diction={}
+    for i in item_list:
+        diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
+    selected_subcategory = st.multiselect("Vendor",diction[inp3],key='subcategory_key',disabled=not options)
+    return selected_subcategory
+
+
+
+# @st.fragment
+# def first_dropdown():
+#     item_list=list(rej_df['ITEM_ID'].unique())
+#     return st.selectbox('Item', item_list, key='dropdown1')
+
+# @st.fragment
+# def second_dropdown():
+#     if 'dropdown1' in st.session_state:
+#         diction={}
+#         for i in item_list:
+#             diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
+#         dropdown1 = st.session_state.
+#         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
+
+
 
 @st.cache_resource
 def read_data(file):
@@ -233,36 +264,26 @@ if selected=='Home':
         
         # Slope(df1,inp1)
         item_list=list(rej_df['ITEM_ID'].unique())
-        with st.form(key='my_form'):
-            col1, col2, col3 =st.columns(3)
-            with col1:
-                inp3=st.selectbox(label="Item",options=item_list)
-                diction={}
-                for i in item_list:
-                    diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
-            with col2:
-                inp4 = st.multiselect("Vendor",diction[inp3],diction[inp3][0])
-            with col3:
-                submit_button = st.form_submit_button(label='Submit')
-        
+        inp3 = first_dropdown()
+        inp4= second_dropdown(inp3,itemlist)
        
         # lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
         # inp4=st.selectbox(label="Vendor",options=lists)
-        if submit_button:                
-            temp_df= rej_df.loc[(rej_df['ITEM_ID']==inp3)&(rej_df['VENDOR_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
+        # if submit_button:                
+        temp_df= rej_df.loc[(rej_df['ITEM_ID']==inp3)&(rej_df['VENDOR_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
         # temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         # search_2=st.checkbox("Advance search")
-            start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
-            end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
+        start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
+        end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
         # if search_2:
         #     date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
         #     date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
         #     temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
             
-            fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
-                xaxis_title="Date", yaxis_title="Rejection Rate")
-            st.plotly_chart(fig,use_container_width=True)
-            Slope(temp_df,inp4)
+        fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
+            xaxis_title="Date", yaxis_title="Rejection Rate")
+        st.plotly_chart(fig,use_container_width=True)
+        Slope(temp_df,inp4)
         # df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
         # fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
         #     xaxis_title="Date", yaxis_title="Rejection Rate")
