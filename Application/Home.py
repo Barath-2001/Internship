@@ -54,7 +54,7 @@ def read_data(file):
     for index, row in rej_df.iterrows():
         tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
         rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
-
+    rej_df.insert(5,'REJECTION_RATE',rej_rate)
     return df_main,rej_df,acpt_df,rej_rate    
 # @st.cache_resource
 # def Rejection_Rate(df_main,rej_df):
@@ -137,7 +137,7 @@ if selected=='Home':
         #     plt.text(i,v,str(v),ha='center')
         # st.pyplot(fig)
         # rej_rate=Rejection_Rate(df_main,rej_df)
-        rej_df.insert(5,'REJECTION_RATE',rej_rate)
+        # rej_df.insert(5,'REJECTION_RATE',rej_rate)
         # supp1=list(rej_df['VENDOR_ID'].unique())
         # inp1=st.selectbox(label="Vendor:", options=supp1)
         # diction={}
