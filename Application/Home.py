@@ -18,7 +18,7 @@ st.markdown("""
 <style>
 .stButton > button {
     display: block;
-    margin: 100px 0px 0px 0px;
+    margin: 30px 0px 0px 0px;
 }
 </style>
 """, unsafe_allow_html=True)
