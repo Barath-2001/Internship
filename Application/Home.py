@@ -272,9 +272,10 @@ if selected=='Home':
             return slopes
         
         # Slope(df1,inp1)
+        item_list=list(rej_df['ITEM_ID'].unique())
+        st.write(item_list)
         cols=st.columns([2,2,1])
         with cols[0]:
-            item_list=list(rej_df['ITEM_ID'].unique())
             inp3 = st.selectbox("Item",item_list)
         with cols[1]:
             diction={}
