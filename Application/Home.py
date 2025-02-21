@@ -9,6 +9,16 @@ import openpyxl
 import datetime
 import time
 
+st.markdown("""
+<style>
+.stButton > button {
+    display: block;
+    margin: 0 auto;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 st.set_page_config(page_title = 'Application')
 st.title("Supplier Analysis")
 
