@@ -9,6 +9,11 @@ import openpyxl
 import datetime
 import time
 
+
+
+
+st.set_page_config(page_title = 'Application')
+st.title("Supplier Analysis")
 st.markdown("""
 <style>
 .stButton > button {
@@ -17,11 +22,6 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-
-
-st.set_page_config(page_title = 'Application')
-st.title("Supplier Analysis")
-
 with st.sidebar:
     selected=option_menu(
         menu_title='Main Menu',
