@@ -129,7 +129,7 @@ if selected=='Home':
         # fig = px.line(df1, x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='ITEM_ID', markers=True).update_layout(
         #     xaxis_title="Date", yaxis_title="Rejection Rate")
         # st.plotly_chart(fig,use_container_width=True)
-        @st.cache_data
+        
         def Trend(supp,slopes,time,inp):
             down_flag=0
             month=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -179,7 +179,7 @@ if selected=='Home':
                     l=list(set(l))
                     for i in l:
                         st.write(month[i-1])
-        @st.cache_data
+       
         def Slope(df,inp):
             supp=list(df['VENDOR_ID'].unique())
             slopes=[]
