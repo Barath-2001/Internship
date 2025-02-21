@@ -263,7 +263,7 @@ if selected=='Home':
         
         # Slope(df1,inp1)
         item_list=list(rej_df['ITEM_ID'].unique())
-        inp3 = st.multiselect("Item",item_list)
+        inp3 = st.selectbox("Item",item_list)
         diction={}
         for i in item_list:
             diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
