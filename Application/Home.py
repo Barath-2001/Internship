@@ -265,7 +265,7 @@ if selected=='Home':
         # Slope(df1,inp1)
         item_list=list(rej_df['ITEM_ID'].unique())
         inp3 = first_dropdown()
-        inp4= second_dropdown(inp3,itemlist)
+        inp4= second_dropdown(inp3,item_list)
        
         # lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
         # inp4=st.selectbox(label="Vendor",options=lists)
