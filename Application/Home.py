@@ -23,7 +23,7 @@ with st.sidebar:
 @st.fragment
 def first_dropdown():
     item_list=list(rej_df['ITEM_ID'].unique())
-    selected_category = st.selectbox('Item',key='inp3')
+    selected_category = st.selectbox('Item',item_list)
     return selected_category
 
 @st.fragment
@@ -31,7 +31,7 @@ def second_dropdown(inp3,item_list):
     diction={}
     for i in item_list:
         diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
-    selected_subcategory = st.multiselect("Vendor",diction[inp3],key='inp4',disabled=not options)
+    selected_subcategory = st.multiselect("Vendor",diction[inp3],disabled=not options)
     return selected_subcategory
 
 
