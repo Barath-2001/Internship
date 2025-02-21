@@ -27,7 +27,7 @@ def read_data(file):
 
             # st.success("Items with no ID are omitted") 
     return po_receiving_data    
-@st,cache_resourse
+@st.cache_resourse
 def Rejection_Rate(df_main,rej_df):
     rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
         tol_qn={}
