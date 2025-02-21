@@ -31,7 +31,7 @@ def second_dropdown(inp3,item_list):
     diction={}
     for i in item_list:
         diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
-    selected_subcategory = st.multiselect("Vendor",diction[inp3])
+    selected_subcategory = st.multiselect("Vendor",diction[inp3],diction[inp3][0])
     return selected_subcategory
 
 
