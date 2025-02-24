@@ -60,13 +60,14 @@ with st.sidebar:
 #         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
 
 
-
+flag=0
 @st.cache_resource
 def read_data(file):
     po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
             # st.success("Items with no ID are omitted") 
     # po_receiving_data=read_data(file)
     # st.toast('File upload successfully.', icon="✅")
+    flag=1
     df_main=po_receiving_data.copy()   
     st.title("Data")
     st.write(df_main.sample(7).reset_index(drop=True))
@@ -112,7 +113,9 @@ def read_data(file):
 if selected=='Home':  
     if file is not None:
         df_main,rej_df,acpt_df,rej_rate=read_data(file)
-        # st.toast('File upload successfully.', icon="✅")
+        if flag==1:
+            st.toast('File upload successfully.', icon="✅")
+            flag=0
         # df_main=po_receiving_data.copy()   
         # st.title("Data")
         # st.write(df_main.sample(7).reset_index(drop=True))
