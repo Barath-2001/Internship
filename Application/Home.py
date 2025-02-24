@@ -29,6 +29,9 @@ with st.sidebar:
     )
     file= st.file_uploader(label = 'Upload your dataset:',type=['xlsx','csv'])
 
+if 'flag' not in st.session_state:
+    st.session_state.flag = False  
+    
 # @st.fragment
 # def first_dropdown():
 #     item_list=list(rej_df['ITEM_ID'].unique())
@@ -66,7 +69,7 @@ def read_data(file):
             # st.success("Items with no ID are omitted") 
     # po_receiving_data=read_data(file)
     # st.toast('File upload successfully.', icon="✅")
-    flag=1
+    st.session_state.flag = True
     df_main=po_receiving_data.copy()   
     st.title("Data")
     st.write(df_main.sample(7).reset_index(drop=True))
@@ -95,7 +98,7 @@ def read_data(file):
         tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
         rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
     rej_df.insert(5,'REJECTION_RATE',rej_rate)
-    return df_main,rej_df,acpt_df,rej_rate,flag    
+    return df_main,rej_df,acpt_df,rej_rate
 # @st.cache_resource
 # def Rejection_Rate(df_main,rej_df):
 #     rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
@@ -111,10 +114,10 @@ def read_data(file):
     
 if selected=='Home':  
     if file is not None:
-        df_main,rej_df,acpt_df,rej_rate,flag=read_data(file)
-        if flag==1:
+        df_main,rej_df,acpt_df,rej_rate=read_data(file)
+        if st.session_state.flag:
             st.toast('File upload successfully.', icon="✅")
-            flag=0
+            st.session_state.flag=False
         # df_main=po_receiving_data.copy()   
         # st.title("Data")
         # st.write(df_main.sample(7).reset_index(drop=True))
