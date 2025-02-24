@@ -60,7 +60,6 @@ with st.sidebar:
 #         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
 
 
-flag=0
 @st.cache_resource
 def read_data(file):
     po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
@@ -96,7 +95,7 @@ def read_data(file):
         tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
         rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
     rej_df.insert(5,'REJECTION_RATE',rej_rate)
-    return df_main,rej_df,acpt_df,rej_rate    
+    return df_main,rej_df,acpt_df,rej_rate,flag    
 # @st.cache_resource
 # def Rejection_Rate(df_main,rej_df):
 #     rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
@@ -112,7 +111,7 @@ def read_data(file):
     
 if selected=='Home':  
     if file is not None:
-        df_main,rej_df,acpt_df,rej_rate=read_data(file)
+        df_main,rej_df,acpt_df,rej_rate,flag=read_data(file)
         if flag==1:
             st.toast('File upload successfully.', icon="✅")
             flag=0
