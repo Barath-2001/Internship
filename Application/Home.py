@@ -306,7 +306,7 @@ if selected=='Home':
             fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
                 xaxis_title="Date", yaxis_title="Rejection Rate")
             st.plotly_chart(fig,use_container_width=True)
-            Slope(temp_df,inp4)
+            # Slope(temp_df,inp4)
         # df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
         # fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
         #     xaxis_title="Date", yaxis_title="Rejection Rate")
