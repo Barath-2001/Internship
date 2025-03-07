@@ -64,7 +64,7 @@ if 'flag' not in st.session_state:
 
 @st.cache_resource
 def read_data(file):
-    po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="C,F,M,O:P",engine='openpyxl')
+    po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="D,G,J,N,P:Q,S",engine='openpyxl')
             # st.success("Items with no ID are omitted") 
     # po_receiving_data=read_data(file)
     # st.toast('File upload successfully.', icon="✅")
