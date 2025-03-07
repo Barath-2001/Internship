@@ -11,7 +11,6 @@ import time
 
 
 
-
 st.set_page_config(page_title = 'Application')
 st.title("Supplier Analysis")
 st.markdown("""
