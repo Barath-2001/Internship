@@ -277,7 +277,7 @@ if selected=='Home':
             return slopes
         
         # Slope(df1,inp1)
-        vendor_list=list(acpt_df['VENDOR_ID'].unique())
+        vendor_list=list(rej_df['VENDOR_ID'].unique())
         # st.write(item_list)
         cols=st.columns([2,2,1])
         with cols[0]:
@@ -285,7 +285,7 @@ if selected=='Home':
         with cols[1]:
             diction={}
             for i in vendor_list:
-                diction[i]=list(acpt_df.loc[acpt_df['VENDOR_ID']==i]['ITEM_ID'].unique())
+                diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
             inp4= st.multiselect("Item",diction[inp3],diction[inp3][0])
         with cols[2]:
             submit_button=st.button("Submit")
