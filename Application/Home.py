@@ -74,7 +74,6 @@ def read_data(file):
     st.title("Data")
     st.write(df_main.sample(7).reset_index(drop=True))
     df_main['ITEM_ID'].fillna(-1,inplace=True)
-    df_main=df_main.loc[(df_main['ITEM_ID']!=-1)].copy()
     if df_main['ITEM_ID'].dtype != 'O':
         df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce') 
         # st.write(df_main.dtypes)
@@ -278,7 +277,7 @@ if selected=='Home':
             return slopes
         
         # Slope(df1,inp1)
-        vendor_list=list(df_main['VENDOR_ID'].unique())
+        vendor_list=list(acpt_df['VENDOR_ID'].unique())
         # st.write(item_list)
         cols=st.columns([2,2,1])
         with cols[0]:
@@ -286,7 +285,7 @@ if selected=='Home':
         with cols[1]:
             diction={}
             for i in vendor_list:
-                diction[i]=list(df_main.loc[df_main['VENDOR_ID']==i]['ITEM_ID'].unique())
+                diction[i]=list(acpt_df.loc[acpt_df['VENDOR_ID']==i]['ITEM_ID'].unique())
             inp4= st.multiselect("Item",diction[inp3],diction[inp3][0])
         with cols[2]:
             submit_button=st.button("Submit")
