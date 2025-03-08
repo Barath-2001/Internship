@@ -62,6 +62,11 @@ if 'flag' not in st.session_state:
 #         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
 
 
+def Rejection_rate():
+    
+    
+
+
 @st.cache_resource
 def read_data(file):
     po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="D,G,J,N,P:Q,S",engine='openpyxl')
@@ -277,7 +282,7 @@ if selected=='Home':
             return slopes
         
         # Slope(df1,inp1)
-        vendor_list=list(rej_df['VENDOR_ID'].unique())
+        vendor_list=list(df_main['VENDOR_ID'].unique())
         # st.write(item_list)
         cols=st.columns([2,2,1])
         with cols[0]:
@@ -285,7 +290,7 @@ if selected=='Home':
         with cols[1]:
             diction={}
             for i in vendor_list:
-                diction[i]=list(rej_df.loc[rej_df['VENDOR_ID']==i]['ITEM_ID'].unique())
+                diction[i]=list(df_main.loc[df_main['VENDOR_ID']==i]['ITEM_ID'].unique())
             inp4= st.multiselect("Item",diction[inp3],diction[inp3][0])
         with cols[2]:
             submit_button=st.button("Submit")
@@ -298,6 +303,7 @@ if selected=='Home':
         # search_2=st.checkbox("Advance search")
             start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
             end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
+            
         # if search_2:
         #     date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
         #     date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
