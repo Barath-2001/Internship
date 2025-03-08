@@ -339,7 +339,7 @@ if selected=='Home':
         #     date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
         #     temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
             
-            fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='VENDOR_ID', markers=True).update_layout(
+            fig = px.line(temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE'], x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='VENDOR_ID', markers=True).update_layout(
                 xaxis_title="Date", yaxis_title="Rejection Rate")
             st.plotly_chart(fig,use_container_width=True)
             # Slope(temp_df,inp4)
