@@ -62,7 +62,7 @@ if 'flag' not in st.session_state:
 #         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
 
 
-def Rejection_rate():
+# def Rejection_rate():
     
     
 
