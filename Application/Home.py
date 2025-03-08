@@ -298,7 +298,7 @@ if selected=='Home':
         # lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
         # inp4=st.selectbox(label="Vendor",options=lists)
         if submit_button:               
-            temp_df= rej_df.loc[(rej_df['VENDOR_ID']==inp3)&(rej_df['ITEM_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
+            temp_df= df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
         # temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         # search_2=st.checkbox("Advance search")
             start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
