@@ -62,6 +62,40 @@ if 'flag' not in st.session_state:
 #         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
 
 
+def Rejection_rate(inp3,inp4):
+    df=df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID'].isin(inp4))].sort_values(by=['TRANSACTION_DATE','PO_LINE_ID']).copy()
+    qn=dict(df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].groupby(['VENDOR_ID','ITEM_ID','PO_LINE_ID'])['ACTUAL_QUANTITY'].sum())
+    rej_rate=[]
+    tot_qn={}
+    for i,j in qn.items():
+        act=df.loc[(df['VENDOR_ID']==i[0])&(df['ITEM_ID']==i[1])&(df['PO_LINE_ID']==i[2])&(df['TRANSACTION_TYPE']=='ACCEPT')].sort_values(by=['TRANSACTION_DATE'])['ACTUAL_QUANTITY'].sum()
+        rec=df.loc[(df['VENDOR_ID']==i[0])&(df['ITEM_ID']==i[1])&(df['PO_LINE_ID']==i[2])&(df['TRANSACTION_TYPE']=='RECEIVE')].sort_values(by=['TRANSACTION_DATE'])['ACTUAL_QUANTITY'].sum()
+        if act==0:
+            tot_qn[i]=rec
+        else:
+            tot_qn[i]=act
+
+    for index, row in df.iterrows():
+        if row['TRANSACTION_TYPE']!='RECEIVE':
+            if row['TRANSACTION_TYPE']=='ACCEPT':
+                tol=tot_qn[(row['VENDOR_ID'],row['ITEM_ID'],row['PO_LINE_ID'])]
+                total=df.loc[(df['VENDOR_ID']==row['VENDOR_ID'])&(df['ITEM_ID']==row['ITEM_ID'])&(df['PO_LINE_ID']==row['PO_LINE_ID'])&(df['TRANSACTION_TYPE']=='ACCEPT')]['ACTUAL_QUANTITY'].sum()
+                if total==tol:
+                    act=tol-total
+                else:
+                    print("true")
+                    act=tol-row['ACTUAL_QUANTITY']
+                rej_rate.append((act/tol)*100)
+            else:
+                tol=tot_qn[(row['VENDOR_ID'],row['ITEM_ID'],row['PO_LINE_ID'])]
+                rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
+     
+    df.insert(5,'REJECTION_RATE',0.0)
+    df.loc[df['TRANSACTION_TYPE']!='RECEIVE','REJECTION_RATE']=rej_rate
+    df['MONTH']=df['TRANSACTION_DATE'].copy()
+    df.set_index('MONTH',inplace=True)
+    return df
+
 @st.cache_resource
 def read_data(file):
     po_receiving_data=pd.read_excel(file,na_values='Missing',usecols="D,G,J,N,P:Q,S",engine='openpyxl')
@@ -89,16 +123,16 @@ def read_data(file):
     rej_df.reset_index(drop=True, inplace=True)
     rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
     rej_df.set_index('MONTH',inplace=True)   
-    rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
-    tol_qn={}
-    for i,j in rej_qn.items():
-        tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1]) & (df_main['TRANSACTION_TYPE']=='RECEIVE')]['ACTUAL_QUANTITY'].sum()
-    rej_rate=[]
-    for index, row in rej_df.iterrows():
-        tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
-        rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
-    rej_df.insert(5,'REJECTION_RATE',rej_rate)
-    return df_main,rej_df,acpt_df,rej_rate
+    # rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
+    # tol_qn={}
+    # for i,j in rej_qn.items():
+    #     tol_qn[i]=df_main.loc[(df_main['VENDOR_ID']==i[0]) & (df_main['ITEM_ID']==i[1]) & (df_main['TRANSACTION_TYPE']=='RECEIVE')]['ACTUAL_QUANTITY'].sum()
+    # rej_rate=[]
+    # for index, row in rej_df.iterrows():
+    #     tol=tol_qn[(row['VENDOR_ID'],row['ITEM_ID'])]
+    #     rej_rate.append((row['ACTUAL_QUANTITY']/tol)*100)
+    # rej_df.insert(5,'REJECTION_RATE',rej_rate)
+    return df_main
 # @st.cache_resource
 # def Rejection_Rate(df_main,rej_df):
 #     rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
@@ -114,7 +148,7 @@ def read_data(file):
     
 if selected=='Home':  
     if file is not None:
-        df_main,rej_df,acpt_df,rej_rate=read_data(file)
+        df_main=read_data(file)
         if st.session_state.flag:
             st.toast('File upload successfully.', icon="✅")
             st.session_state.flag=False
@@ -293,6 +327,7 @@ if selected=='Home':
         # lists=list(rej_df.loc[rej_df['ITEM_ID']==inp3]["VENDOR_ID"].unique())
         # inp4=st.selectbox(label="Vendor",options=lists)
         if submit_button:               
+            temp_df=Rejection_rate(inp3,inp4)
             temp_df= df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
         # temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         # search_2=st.checkbox("Advance search")
@@ -304,7 +339,7 @@ if selected=='Home':
         #     date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
         #     temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
             
-            fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
+            fig = px.line(temp_df, x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='VENDOR_ID', markers=True).update_layout(
                 xaxis_title="Date", yaxis_title="Rejection Rate")
             st.plotly_chart(fig,use_container_width=True)
             # Slope(temp_df,inp4)
