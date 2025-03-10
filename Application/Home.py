@@ -88,11 +88,11 @@ def Prophet_model(df,inp3,inp4):
     forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(3)
     time_df=df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].copy()
     time_df['DAYS']=(time_df['PROMISED_DATE']-time_df['TRANSACTION_DATE']).dt.days.copy()
-    st.write(time_df)
+    # st.write(time_df)
     missed=time_df.loc[time_df['DAYS']<0]['DAYS'].count()
     total=time_df['DAYS'].count()
     percentage=((total-missed)/total)*100
-    st.write(total,missed,percentage)
+    # st.write(total,missed,percentage)
     return forecast,percentage
 
 def Rejection_rate(inp3,inp4):
