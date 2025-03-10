@@ -139,9 +139,9 @@ def read_data(file):
     st.session_state.flag = True
     df_main=po_receiving_data.copy()   
     st.title("Data")
-    st.write(df_main.sample(7).reset_index(drop=True))
     df_main['ITEM_ID'].fillna(-1,inplace=True)
     df_main=df_main.loc[(df_main['ITEM_ID']!=-1)].copy()
+    st.write(df_main.sample(7).reset_index(drop=True))
     if df_main['ITEM_ID'].dtype != 'O':
         df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce') 
         # st.write(df_main.dtypes)
