@@ -8,8 +8,8 @@ from streamlit_option_menu import option_menu
 import openpyxl
 import datetime
 import time
-
-
+from sklearn.preprocessing import OneHotEncoder
+from prophet import Prophet
 
 st.set_page_config(page_title = 'Application')
 st.title("Supplier Analysis")
@@ -61,6 +61,38 @@ if 'flag' not in st.session_state:
 #         dropdown1 = st.session_state.
 #         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
 
+def Prophet_model(df,inp3,inp4):
+    DF=df.loc[df['TRANSACTION_TYPE']!='RECEIVE'].copy()
+    DF['ds']=DF['TRANSACTION_DATE'].copy()
+    DF['y']=DF['REJECTION_RATE'].copy()
+    DF.drop(columns=['PO_LINE_ID','ACTUAL_QUANTITY','TRANSACTION_TYPE','TRANSACTION_DATE','REJECTION_RATE','PROMISED_DATE'],inplace=True)
+    encoder=OneHotEncoder(sparse_output=False)
+    encoded = encoder.fit_transform(DF[['VENDOR_ID', 'ITEM_ID']])
+    columns = [f"{col}_{int(val)}" for col, vals in zip(['VENDOR', 'ITEM'], encoder.categories_) for val in vals]
+    DF[columns] = encoded
+    DF.drop(columns=['VENDOR_ID', 'ITEM_ID'], inplace=True)
+    model=Prophet()
+    for col in columns:
+         model.add_regressor(col)
+    
+    model.fit(DF)
+    future = model.make_future_dataframe(periods=3, freq='M')
+    
+    selected_vendor = "VENDOR_"+str(inp3)
+    selected_item = "ITEM_"+str(inp4)
+    # Set vendor-item encoding for future data
+    for col in columns:
+        future[col] = 1 if col in [selected_vendor, selected_item] else 0
+
+    forecast=model.predict(future)
+    forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(3)
+    time_df=df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].copy()
+    time_df['DAYS']=(time_df['PROMISED_DATE']-time_df['TRANSACTION_DATE']).dt.days.copy()
+    missed=time_df.loc[time_df['DAYS']<0]['DAYS'].count()
+    total=time_df.loc[(time_df['VENDOR_ID']==4821451) & (time_df['ITEM_ID']==19074991)]['DAYS'].count()
+    percentage=((total-missed)/total)*100
+    
+    return forecast,percentage
 
 def Rejection_rate(inp3,inp4):
     if inp3:
@@ -95,8 +127,6 @@ def Rejection_rate(inp3,inp4):
      
     df.insert(5,'REJECTION_RATE',0.0)
     df.loc[df['TRANSACTION_TYPE']!='RECEIVE','REJECTION_RATE']=rej_rate
-    df['MONTH']=df['TRANSACTION_DATE'].copy()
-    df.set_index('MONTH',inplace=True)
     return df
 
 @st.cache_resource
@@ -114,18 +144,18 @@ def read_data(file):
     if df_main['ITEM_ID'].dtype != 'O':
         df_main['ITEM_ID']=pd.to_numeric(df_main['ITEM_ID'], downcast='integer', errors='coerce') 
         # st.write(df_main.dtypes)
-    df_main['TRANSACTION_DATE']=pd.to_datetime(df_main['TRANSACTION_DATE']).dt.normalize().copy()
-    acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
-    a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
-    acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
-    acpt_df.reset_index(drop=True,inplace=True)  
-    acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
-    acpt_df.set_index('MONTH',inplace=True)     
-    rej_df = df_main.loc[(df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT'))].copy()
-    rej_df=rej_df.sort_values(by=['TRANSACTION_DATE']).copy()
-    rej_df.reset_index(drop=True, inplace=True)
-    rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
-    rej_df.set_index('MONTH',inplace=True)   
+    df_main['TRANSACTION_DATE']=pd.to_datetime(df_main['TRANSACTION_DATE'])
+    # acpt_df=df_main.loc[(df_main['TRANSACTION_TYPE']=='ACCEPT') & (df_main['ITEM_ID']!=-1)].copy()
+    # a=pd.to_datetime(acpt_df['TRANSACTION_DATE'])                                                                               
+    # acpt_df['TRANSACTION_DATE']=pd.to_datetime(a.dt.strftime("%m-%d-%y")).copy()                                                
+    # acpt_df.reset_index(drop=True,inplace=True)  
+    # acpt_df['MONTH']=acpt_df['TRANSACTION_DATE']
+    # acpt_df.set_index('MONTH',inplace=True)     
+    # rej_df = df_main.loc[(df_main['ITEM_ID']!=-1) & ((df_main['TRANSACTION_TYPE']=='REJECT'))].copy()
+    # rej_df=rej_df.sort_values(by=['TRANSACTION_DATE']).copy()
+    # rej_df.reset_index(drop=True, inplace=True)
+    # rej_df['MONTH']=rej_df['TRANSACTION_DATE']                                                                                  
+    # rej_df.set_index('MONTH',inplace=True)   
     # rej_qn=dict(rej_df.groupby([ 'VENDOR_ID' , 'ITEM_ID' ])['ACTUAL_QUANTITY'].sum())
     # tol_qn={}
     # for i,j in rej_qn.items():
@@ -335,20 +365,34 @@ if selected=='Home':
         # inp4=st.selectbox(label="Vendor",options=lists)
         if submit_button:               
             temp_df=Rejection_rate(inp3,inp4)
+            if temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['VENDOR_ID'].count()<2:
+                st.warning("Select Vedor and Item with more than one data")
+            else:
+                forecast,percentage=Prophet_model(temp_df,inp3,inp4)
+                temp
+                data={
+                    'VENDOR': inp3,
+                    'ITEM': inp4,
+                    'REJECTION RATE':'0%' ,
+                    'ON TIME DELIVERY':'{0}%'.format(percentage)
+                }
+                temp_df=pd.DataFrame([data])
+                st.write(temp_df)
+            
             # temp_df= df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
         # temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         # search_2=st.checkbox("Advance search")
-            start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
-            end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
+            # start_2=list(temp_df.head(1)['TRANSACTION_DATE'])
+            # end_2=list(temp_df.tail(1)['TRANSACTION_DATE'])   
             
         # if search_2:
         #     date_3=pd.to_datetime(st.date_input("Start Date",start_2[0]))
         #     date_4=pd.to_datetime(st.date_input("End Date",end_2[0]))
         #     temp_df= rej_df.loc[((rej_df['VENDOR_ID']==inp4) & (rej_df['ITEM_ID']==inp3))&(rej_df['TRANSACTION_DATE']>=date_3) &(rej_df['TRANSACTION_DATE']<=date_4) ].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
             
-            fig = px.line(temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE'], x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='VENDOR_ID', markers=True).update_layout(
-                xaxis_title="Date", yaxis_title="Rejection Rate")
-            st.plotly_chart(fig,use_container_width=True)
+            # fig = px.line(temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE'], x='TRANSACTION_DATE', y='REJECTION_RATE', color='ITEM_ID', symbol='VENDOR_ID', markers=True).update_layout(
+            #     xaxis_title="Date", yaxis_title="Rejection Rate")
+            # st.plotly_chart(fig,use_container_width=True)
             # Slope(temp_df,inp4)
         # df2=rej_df.loc[(rej_df['ITEM_ID']==21635887)].sort_values(by=['TRANSACTION_DATE'])
         # fig = px.line(df2, x='TRANSACTION_DATE', y='REJECTION_RATE', color='VENDOR_ID', symbol='VENDOR_ID', markers=True).update_layout(
