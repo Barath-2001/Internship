@@ -90,7 +90,7 @@ def Prophet_model(df,inp3,inp4):
     time_df['DAYS']=(time_df['PROMISED_DATE']-time_df['TRANSACTION_DATE']).dt.days.copy()
     st.write(time_df)
     missed=time_df.loc[time_df['DAYS']<0]['DAYS'].count()
-    total=time_df.loc[(time_df['VENDOR_ID']==inp3) & (time_df['ITEM_ID']==inp4)]['DAYS'].count()
+    total=time_df['DAYS'].count()
     percentage=((total-missed)/total)*100
     st.write(total,missed,percentage)
     return forecast,percentage
