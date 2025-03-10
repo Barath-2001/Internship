@@ -97,7 +97,7 @@ def Prophet_model(df,inp3,inp4):
 
 def Rejection_rate(inp3,inp4):
     if inp3:
-        df=df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID'].isin(inp4))].sort_values(by=['TRANSACTION_DATE','PO_LINE_ID']).copy()
+        df=df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','PO_LINE_ID']).copy()
     else:
         df=df_main.loc[(df_main['ITEM_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','PO_LINE_ID']).copy()
     qn=dict(df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].groupby(['VENDOR_ID','ITEM_ID','PO_LINE_ID'])['ACTUAL_QUANTITY'].sum())
