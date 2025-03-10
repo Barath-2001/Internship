@@ -324,7 +324,7 @@ if selected=='Home':
                     diction[i]=list(df_main.loc[df_main['VENDOR_ID']==i]['ITEM_ID'].unique())
                 inp4= st.multiselect("Item",diction[inp3],diction[inp3][0])
             else:
-                inp4= st.selectbox("Item",item_list)
+                inp4= st.selectbox("Item",Item_list)
         with cols[2]:
             submit_button=st.button("Submit")
         
