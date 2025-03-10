@@ -65,7 +65,6 @@ def Prophet_model(df,inp3,inp4):
     DF=df.loc[df['TRANSACTION_TYPE']!='RECEIVE'].sort_values(by=['PO_LINE_ID','TRANSACTION_DATE']).copy()
     DF.reset_index(inplace=True)
     DF.drop(columns=['index'],inplace=True)
-    st.write(DF)
     DF['ds']=DF['TRANSACTION_DATE'].copy()
     DF['y']=DF['REJECTION_RATE'].copy()
     DF.drop(columns=['PO_LINE_ID','ACTUAL_QUANTITY','TRANSACTION_TYPE','TRANSACTION_DATE','REJECTION_RATE','PROMISED_DATE'],inplace=True)
@@ -77,18 +76,15 @@ def Prophet_model(df,inp3,inp4):
     model=Prophet()
     for col in columns:
          model.add_regressor(col)
-    
     model.fit(DF)
     future = model.make_future_dataframe(periods=2, freq='M')
-    
     selected_vendor = "VENDOR_"+str(inp3)
     selected_item = "ITEM_"+str(inp4)
-    # Set vendor-item encoding for future data
     for col in columns:
         future[col] = 1 if col in [selected_vendor, selected_item] else 0
-
     forecast=model.predict(future)
     st.write(forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(15))
+
     time_df=df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].copy()
     time_df['DAYS']=(time_df['PROMISED_DATE']-time_df['TRANSACTION_DATE']).dt.days.copy()
     # st.write(time_df)
