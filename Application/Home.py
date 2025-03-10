@@ -63,6 +63,8 @@ if 'flag' not in st.session_state:
 
 def Prophet_model(df,inp3,inp4):
     DF=df.loc[df['TRANSACTION_TYPE']!='RECEIVE'].sort_values(by=['PO_LINE_ID','TRANSACTION_DATE']).copy()
+    DF.reset_index(inplace=True)
+    DF.drop(columns=['index'],inplace=True)
     st.write(DF)
     DF['ds']=DF['TRANSACTION_DATE'].copy()
     DF['y']=DF['REJECTION_RATE'].copy()
