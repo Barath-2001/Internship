@@ -88,7 +88,7 @@ def Prophet_model(df,inp3,inp4):
         future[col] = 1 if col in [selected_vendor, selected_item] else 0
 
     forecast=model.predict(future)
-    st.write(forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(3))
+    st.write(forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(15))
     time_df=df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].copy()
     time_df['DAYS']=(time_df['PROMISED_DATE']-time_df['TRANSACTION_DATE']).dt.days.copy()
     # st.write(time_df)
