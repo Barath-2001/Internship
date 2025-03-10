@@ -85,7 +85,7 @@ def Prophet_model(df,inp3,inp4):
         future[col] = 1 if col in [selected_vendor, selected_item] else 0
 
     forecast=model.predict(future)
-    forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(3)
+    # forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(3)
     time_df=df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].copy()
     time_df['DAYS']=(time_df['PROMISED_DATE']-time_df['TRANSACTION_DATE']).dt.days.copy()
     # st.write(time_df)
@@ -378,7 +378,7 @@ if selected=='Home':
                 }
                 temp_df=pd.DataFrame([data])
                 st.write(temp_df)
-            
+                st.write(forecast[['ds','yhat']].tail(3))
             # temp_df= df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
         # temp_df=rej_df.loc[(rej_df['ITEM_ID']==inp3 )& (rej_df['VENDOR_ID']==inp4)].sort_values(by=['TRANSACTION_DATE','REJECTION_RATE'])
         # search_2=st.checkbox("Advance search")
