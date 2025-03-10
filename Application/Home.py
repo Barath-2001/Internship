@@ -356,7 +356,7 @@ if selected=='Home':
                 diction={}
                 for i in vendor_list:
                     diction[i]=list(df_main.loc[df_main['VENDOR_ID']==i]['ITEM_ID'].unique())
-                inp4= st.multiselect("Item",diction[inp3],diction[inp3][0])
+                inp4= st.selectbox("Item",diction[inp3])
             else:
                 inp4= st.selectbox("Item",Item_list)
         with cols[2]:
