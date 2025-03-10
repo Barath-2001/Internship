@@ -369,7 +369,6 @@ if selected=='Home':
                 st.warning("Select Vedor and Item with more than one data")
             else:
                 forecast,percentage=Prophet_model(temp_df,inp3,inp4)
-                temp
                 data={
                     'VENDOR': inp3,
                     'ITEM': inp4,
