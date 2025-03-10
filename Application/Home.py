@@ -91,7 +91,7 @@ def Prophet_model(df,inp3,inp4):
     missed=time_df.loc[time_df['DAYS']<0]['DAYS'].count()
     total=time_df.loc[(time_df['VENDOR_ID']==4821451) & (time_df['ITEM_ID']==19074991)]['DAYS'].count()
     percentage=((total-missed)/total)*100
-    
+    st.write(percentage)
     return forecast,percentage
 
 def Rejection_rate(inp3,inp4):
