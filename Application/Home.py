@@ -62,7 +62,7 @@ if 'flag' not in st.session_state:
 #         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
 
 def Prophet_model(df,inp3,inp4):
-    DF=df.loc[df['TRANSACTION_TYPE']!='RECEIVE'].copy()
+    DF=df.loc[df['TRANSACTION_TYPE']!='RECEIVE'].sort_values(by=['PO_LINE_ID','TRANSACTION_DATE']).copy()
     st.write(DF)
     DF['ds']=DF['TRANSACTION_DATE'].copy()
     DF['y']=DF['REJECTION_RATE'].copy()
