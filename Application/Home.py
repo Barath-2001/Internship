@@ -366,6 +366,7 @@ if selected=='Home':
         # inp4=st.selectbox(label="Vendor",options=lists)
         if submit_button:               
             temp_df=Rejection_rate(inp3,inp4)
+            st.write(temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE'])
             if temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['VENDOR_ID'].count()<2:
                 st.warning("Select Vedor and Item with more than one data")
             else:
