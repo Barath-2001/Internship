@@ -6,5 +6,6 @@ streamlit
 pandas
 openpyxl
 datetime
-sklearn
+sklearn.preprocessing  
+OneHotEncoder
 prophet
