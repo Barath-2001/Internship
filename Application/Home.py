@@ -63,6 +63,7 @@ if 'flag' not in st.session_state:
 
 def Prophet_model(df,inp3,inp4):
     DF=df.loc[df['TRANSACTION_TYPE']!='RECEIVE'].copy()
+    st.write(DF)
     DF['ds']=DF['TRANSACTION_DATE'].copy()
     DF['y']=DF['REJECTION_RATE'].copy()
     DF.drop(columns=['PO_LINE_ID','ACTUAL_QUANTITY','TRANSACTION_TYPE','TRANSACTION_DATE','REJECTION_RATE','PROMISED_DATE'],inplace=True)
@@ -366,7 +367,6 @@ if selected=='Home':
         # inp4=st.selectbox(label="Vendor",options=lists)
         if submit_button:               
             temp_df=Rejection_rate(inp3,inp4)
-            st.write(temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE'])
             if temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['VENDOR_ID'].count()<2:
                 st.warning("Select Vedor and Item with more than one data")
             else:
