@@ -79,7 +79,7 @@ def Prophet_model(df,inp3,inp4):
          model.add_regressor(col)
     
     model.fit(DF)
-    future = model.make_future_dataframe(periods=3, freq='M')
+    future = model.make_future_dataframe(periods=2, freq='M')
     
     selected_vendor = "VENDOR_"+str(inp3)
     selected_item = "ITEM_"+str(inp4)
@@ -88,7 +88,7 @@ def Prophet_model(df,inp3,inp4):
         future[col] = 1 if col in [selected_vendor, selected_item] else 0
 
     forecast=model.predict(future)
-    # forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(3)
+    st.write(forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(3))
     time_df=df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].copy()
     time_df['DAYS']=(time_df['PROMISED_DATE']-time_df['TRANSACTION_DATE']).dt.days.copy()
     # st.write(time_df)
