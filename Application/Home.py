@@ -311,16 +311,20 @@ if selected=='Home':
         #     return slopes
         
         # Slope(df1,inp1)
+        Item_list=list(df_main['ITEM_ID'].unique())
         vendor_list=list(df_main['VENDOR_ID'].unique())
         # st.write(item_list)
         cols=st.columns([2,2,1])
         with cols[0]:
             inp3 = st.selectbox("Vendor",vendor_list,index=None)
         with cols[1]:
-            diction={}
-            for i in vendor_list:
-                diction[i]=list(df_main.loc[df_main['VENDOR_ID']==i]['ITEM_ID'].unique())
-            inp4= st.multiselect("Item",diction[inp3],diction[inp3][0])
+            if inp3:
+                diction={}
+                for i in vendor_list:
+                    diction[i]=list(df_main.loc[df_main['VENDOR_ID']==i]['ITEM_ID'].unique())
+                inp4= st.multiselect("Item",diction[inp3],diction[inp3][0])
+            else:
+                inp4= st.selectbox("Item",item_list)
         with cols[2]:
             submit_button=st.button("Submit")
         
