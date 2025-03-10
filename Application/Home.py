@@ -243,79 +243,79 @@ if selected=='Home':
         #     xaxis_title="Date", yaxis_title="Rejection Rate")
         # st.plotly_chart(fig,use_container_width=True)
         
-        def Trend(supp,slopes,time,inp):
-            down_flag=0
-            month=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-            up_flag=0
-            neutral_flag=0
-            mon=[]
-            for i in range(len(slopes)):
-                for j in range(len(slopes[i])):
-                    if slopes[i][j]<0.0:
-                        up_flag=1
-                    if slopes[i][j]>0.0:
-                        down_flag=1
-                    if slopes[i][j]==0:
-                        neutral_flag=1
-                    if slopes[i][j]<0:
-                        mon.append(time[i])
-            ne_flag=0
-            if neutral_flag==1 and up_flag ==0 and down_flag==0:
-                st.write("Vendor {0} has no irregularity detected".format(inp))
-                ne_flag=1
-            elif up_flag==0:
-                st.write("Vendor {0} have a upward trend  ".format(inp))
-            elif down_flag==0:
-                st.write("Vendor {0} have an downward trend".format(inp))
-            if ne_flag==0:    
-                cycle_len=3
-                flag=0
-                count=0
-                l=[]
-                for i in range(len(slopes)):
-                    for j in range(len(slopes[i])):
-                        if slopes[i][j]>=0:
-                            count+=1
-                            if count>=cycle_len:
-                                if flag!=1:
-                                    l.append(time[j])
-                                    l.append(time[j-1])
-                                    flag=1       
-                                else :
-                                    l.append(time[j])
-                                    flag=1
-                        else:
-                            flag=0
-                            count=0
-                if (len(l)!=0):
-                    st.write("The deviation for {0} are in the months of:".format(inp))
-                    l=list(set(l))
-                    for i in l:
-                        st.write(month[i-1])
+        # def Trend(supp,slopes,time,inp):
+        #     down_flag=0
+        #     month=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        #     up_flag=0
+        #     neutral_flag=0
+        #     mon=[]
+        #     for i in range(len(slopes)):
+        #         for j in range(len(slopes[i])):
+        #             if slopes[i][j]<0.0:
+        #                 up_flag=1
+        #             if slopes[i][j]>0.0:
+        #                 down_flag=1
+        #             if slopes[i][j]==0:
+        #                 neutral_flag=1
+        #             if slopes[i][j]<0:
+        #                 mon.append(time[i])
+        #     ne_flag=0
+        #     if neutral_flag==1 and up_flag ==0 and down_flag==0:
+        #         st.write("Vendor {0} has no irregularity detected".format(inp))
+        #         ne_flag=1
+        #     elif up_flag==0:
+        #         st.write("Vendor {0} have a upward trend  ".format(inp))
+        #     elif down_flag==0:
+        #         st.write("Vendor {0} have an downward trend".format(inp))
+        #     if ne_flag==0:    
+        #         cycle_len=3
+        #         flag=0
+        #         count=0
+        #         l=[]
+        #         for i in range(len(slopes)):
+        #             for j in range(len(slopes[i])):
+        #                 if slopes[i][j]>=0:
+        #                     count+=1
+        #                     if count>=cycle_len:
+        #                         if flag!=1:
+        #                             l.append(time[j])
+        #                             l.append(time[j-1])
+        #                             flag=1       
+        #                         else :
+        #                             l.append(time[j])
+        #                             flag=1
+        #                 else:
+        #                     flag=0
+        #                     count=0
+        #         if (len(l)!=0):
+        #             st.write("The deviation for {0} are in the months of:".format(inp))
+        #             l=list(set(l))
+        #             for i in l:
+        #                 st.write(month[i-1])
        
-        def Slope(df,inp):
-            supp=list(df['VENDOR_ID'].unique())
-            slopes=[]
-            time=list(df['TRANSACTION_DATE'].dt.month)
-            for i in supp:
-                y=list(df.loc[df['VENDOR_ID']==i]['REJECTION_RATE'])
-                slope=[0.0]
-                N=len(y)
-                x=[i for i in range(1,N+1)]
-                for i in range(N):
-                    if i+1<N:
-                        slope.append((y[i+1]-y[i])/(x[i+1]-x[i]))
-                slopes.append(slope)
-            Trend(supp,slopes,time,inp)
-        #     print(y)
-            return slopes
+        # def Slope(df,inp):
+        #     supp=list(df['VENDOR_ID'].unique())
+        #     slopes=[]
+        #     time=list(df['TRANSACTION_DATE'].dt.month)
+        #     for i in supp:
+        #         y=list(df.loc[df['VENDOR_ID']==i]['REJECTION_RATE'])
+        #         slope=[0.0]
+        #         N=len(y)
+        #         x=[i for i in range(1,N+1)]
+        #         for i in range(N):
+        #             if i+1<N:
+        #                 slope.append((y[i+1]-y[i])/(x[i+1]-x[i]))
+        #         slopes.append(slope)
+        #     Trend(supp,slopes,time,inp)
+        # #     print(y)
+        #     return slopes
         
         # Slope(df1,inp1)
         vendor_list=list(df_main['VENDOR_ID'].unique())
         # st.write(item_list)
         cols=st.columns([2,2,1])
         with cols[0]:
-            inp3 = st.selectbox("Vendor",vendor_list)
+            inp3 = st.selectbox("Vendor",vendor_list,index=None)
         with cols[1]:
             diction={}
             for i in vendor_list:
