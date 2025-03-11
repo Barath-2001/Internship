@@ -60,7 +60,7 @@ if 'flag' not in st.session_state:
 #             diction[i]=list(rej_df.loc[rej_df['ITEM_ID']==i]['VENDOR_ID'].unique())
 #         dropdown1 = st.session_state.
 #         return st.selectbox('Select Service Level', grouped_dropdowns[dropdown1], key='dropdown2')
-
+@st.cache_data
 def Prophet_model(df,inp3,inp4):
     DF=df.loc[df['TRANSACTION_TYPE']!='RECEIVE'].sort_values(by=['PO_LINE_ID','TRANSACTION_DATE']).copy()
     DF.reset_index(inplace=True)
