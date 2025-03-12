@@ -374,7 +374,7 @@ if selected=='Home':
             st.title("Output")
             temp_df=Rejection_rate(inp3,inp4)
             st.dataframe(temp_df)
-            Rejection=temp_df['REJECTION_RATE'].tail(3).sum()/temp_df['REJECTION_RATE'].count()
+            Rejection=temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['REJECTION_RATE'].tail(5).sum()/temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['REJECTION_RATE'].count()
             st.write(temp_df['REJECTION_RATE'].tail(3).sum(),temp_df['REJECTION_RATE'].count(),Rejection)
             if temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['VENDOR_ID'].count()<2:
                 st.warning("Select Vedor and Item with more than one data")
