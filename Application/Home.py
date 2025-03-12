@@ -370,6 +370,8 @@ if selected=='Home':
         if submit_button:
             st.title("Output")
             temp_df=Rejection_rate(inp3,inp4)
+            Rejection=temp_df['REJECTION_RATE'].tail(3).sum()/temp_df['REJECTION_RATE'].count()
+            st.write(Rejection)
             if temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['VENDOR_ID'].count()<2:
                 st.warning("Select Vedor and Item with more than one data")
             else:
