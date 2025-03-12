@@ -381,19 +381,13 @@ if selected=='Home':
                     'ON TIME DELIVERY':'{0}%'.format(percentage)
                 }
                 temp_df=pd.DataFrame([data])
-                st.write(temp_df)
-                st.write(st.__version__)
-                st.dataframe(
-                    temp_df,
-                    column_config={
-                        "ON TIME DELIVERY": st.column_config.NumberColumn(
-                            "ON TIME DELIVERY",
-                            format=lambda x: f"{x} 🟢" if x >=95.0  else
-                                           (f"{x} 🟡" if x>=80.0 and x<95.0 else
-                                            f"{x} 🔴")
-                        ),
-                    }
+                temp_df["STATUS"] = temp_df["ON TIME DELIVERY"].apply(
+                    lambda x: f"🟢{x}" if x >= 95.0 else 
+                             (f"🟡{x}" if x >= 80.0 and x < 95.0 else f"🔴{x}")
                 )
+
+                st.dataframe(temp_df)
+               
                 # st.write(forecast)
                 st.write(forecast[['ds','yhat']].tail(3))
                 
