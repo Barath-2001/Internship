@@ -397,7 +397,7 @@ if selected=='Home':
                              (f"🟡 {x}%" if float(x) > 5.0 and float(x) < 10.0 else f"🔴 {x}%")
                 )
                 st.dataframe(temp_df)
-                st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
+                # st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
                 forecast["Forecaste Rejection Rate"] = forecast["Forecaste Rejection Rate"].apply(
                     lambda x: f"{round(abs(float(x)), 2)}%"
                 )
