@@ -394,7 +394,7 @@ if selected=='Home':
                 # st.write(forecast)
                 forecast['Forecast Date']=forecast['ds'].copy()
                 forecast['Forecaste Rejection Rate']=forecast['yhat'].copy()
-                forecast.drop(coulmns=['ds','yhat'],inplace=True )
+                forecast.drop(columns=['ds','yhat'],inplace=True )
                 st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
                 
             # temp_df= df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
