@@ -95,7 +95,7 @@ def Prophet_model(df,inp3,inp4):
     percentage=((total-missed)/total)*100
     percentage=round(percentage,1)
     forecast['Forecast Date']=forecast['ds'].copy()
-    forecast['Forecaste Rejection Rate']=forecast['yhat'].copy()
+    forecast['Forecast Rejection Rate']=forecast['yhat'].copy()
     forecast.drop(columns=['ds','yhat'],inplace=True )
     # st.write(total,missed,percentage)
     return forecast,percentage
