@@ -380,6 +380,7 @@ if selected=='Home':
                 st.warning("Select Vedor and Item with more than one data")
             else:
                 forecast,percentage=Prophet_model(temp_df,inp3,inp4)
+                st.dataframe(forecast)
                 data={
                     'VENDOR': inp3,
                     'ITEM': inp4,
@@ -396,7 +397,7 @@ if selected=='Home':
                              (f"🟡 {x}%" if float(x) > 5.0 and float(x) < 10.0 else f"🔴 {x}%")
                 )
                 st.dataframe(temp_df)
-                st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
+                # st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
                 # forecast["Forecaste Rejection Rate"] = forecast["Forecaste Rejection Rate"].apply(
                 #     lambda x: f"{round(abs(float(x)), 2)}"
                 # )
