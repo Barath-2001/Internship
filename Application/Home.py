@@ -68,7 +68,7 @@ def Prophet_model(df,inp3,inp4):
     DF['ds']=DF['TRANSACTION_DATE'].copy()
     DF['y']=DF['REJECTION_RATE'].copy()
     DF.drop(columns=['PO_LINE_ID','ACTUAL_QUANTITY','TRANSACTION_TYPE','TRANSACTION_DATE','REJECTION_RATE','PROMISED_DATE'],inplace=True)
-    st.write(DF)
+    # st.write(DF)
     encoder=OneHotEncoder(sparse_output=False)
     encoded = encoder.fit_transform(DF[['VENDOR_ID', 'ITEM_ID']])
     columns = [f"{col}_{int(val)}" for col, vals in zip(['VENDOR', 'ITEM'], encoder.categories_) for val in vals]
