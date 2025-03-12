@@ -383,7 +383,7 @@ if selected=='Home':
                 temp_df=pd.DataFrame([data])
                 temp_df["STATUS"] = temp_df["ON TIME DELIVERY"].apply(
                     lambda x: f"🟢{x}" if float(x) >= 95.0 else 
-                             (f"🟡{x}" if float(x) >= 80.0 and x < 95.0 else f"🔴{x}")
+                             (f"🟡{x}" if float(x) >= 80.0 and float(x) < 95.0 else f"🔴{x}")
                 )
 
                 st.dataframe(temp_df)
