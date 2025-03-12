@@ -87,6 +87,7 @@ def Prophet_model(df,inp3,inp4):
     # st.write(forecast[['ds','yhat','yhat_lower','yhat_upper']].tail(15))
 
     time_df=df.loc[df['TRANSACTION_TYPE']=='RECEIVE'].copy()
+    time_df['TRANSACTION_DATE']=pd.to_datetime(time_df['TRANSACTION_DATE']).dt.normalize().copy()
     time_df['DAYS']=(time_df['PROMISED_DATE']-time_df['TRANSACTION_DATE']).dt.days.copy()
     # st.write(time_df)
     missed=time_df.loc[time_df['DAYS']<0]['DAYS'].count()
