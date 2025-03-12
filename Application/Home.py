@@ -375,7 +375,6 @@ if selected=='Home':
             temp_df=Rejection_rate(inp3,inp4)
             st.dataframe(temp_df)
             Rejection=temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['REJECTION_RATE'].tail(5).sum()/temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['REJECTION_RATE'].count()
-            st.write(temp_df['REJECTION_RATE'].tail(3).sum(),temp_df['REJECTION_RATE'].count(),Rejection)
             if temp_df.loc[temp_df['TRANSACTION_TYPE']!='RECEIVE']['VENDOR_ID'].count()<2:
                 st.warning("Select Vedor and Item with more than one data")
             else:
@@ -383,7 +382,7 @@ if selected=='Home':
                 data={
                     'VENDOR': inp3,
                     'ITEM': inp4,
-                    'REJECTION RATE':0,
+                    'REJECTION RATE':Rejection,
                     'ON TIME DELIVERY':percentage
                 }
                 temp_df=pd.DataFrame([data])
@@ -396,7 +395,9 @@ if selected=='Home':
                              (f"🟡 {x}%" if float(x) > 5.0 and float(x) < 10.0 else f"🔴 {x}%")
                 )
                 st.dataframe(temp_df)
-               
+                forecast["Forecaste Rejection Rate"] = forecast["Forecaste Rejection Rate"].apply(
+                    lambda x: f"{x}%" round(abs(x),1)  
+                )
                 # st.write(forecast)
 
                 st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
