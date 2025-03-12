@@ -381,9 +381,9 @@ if selected=='Home':
                     'ON TIME DELIVERY':percentage
                 }
                 temp_df=pd.DataFrame([data])
-                temp_df["STATUS"] = temp_df["ON TIME DELIVERY"].apply(
+                temp_df["ON TIME DELIVERY"] = temp_df["ON TIME DELIVERY"].apply(
                     lambda x: f"🟢 {x}%" if float(x) >= 95.0 else 
-                             (f"🟡 {x}%" if float(x) >= 80.0 and float(x) < 95.0 else f"🔴 {x}%")
+                             (f"🟡 {x}%" if float(x) >= 80.0 and float(x) < 95.0 else f"🔴 {x}%").copy()
                 )
 
                 st.dataframe(temp_df)
