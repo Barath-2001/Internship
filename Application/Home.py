@@ -382,6 +382,7 @@ if selected=='Home':
                 }
                 temp_df=pd.DataFrame([data])
                 st.write(temp_df)
+                st.write(st.__version__)
                 st.dataframe(
                     temp_df,
                     column_config={
