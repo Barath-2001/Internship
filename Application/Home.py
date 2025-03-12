@@ -377,7 +377,7 @@ if selected=='Home':
                 data={
                     'VENDOR': inp3,
                     'ITEM': inp4,
-                    'REJECTION RATE':'0%' ,
+                    'REJECTION RATE':0,
                     'ON TIME DELIVERY':percentage
                 }
                 temp_df=pd.DataFrame([data])
@@ -385,7 +385,10 @@ if selected=='Home':
                     lambda x: f"🟢 {x}%" if float(x) >= 95.0 else 
                              (f"🟡 {x}%" if float(x) >= 80.0 and float(x) < 95.0 else f"🔴 {x}%").copy()
                 )
-
+                 temp_df["REJECTION RATE"] = temp_df["REJECTION RATE"].apply(
+                    lambda x: f"🟢 {x}%" if float(x) <= 5.0 else 
+                             (f"🟡 {x}%" if float(x) > 5.0 and float(x) < 10.0 else f"🔴 {x}%").copy()
+                )
                 st.dataframe(temp_df)
                
                 # st.write(forecast)
