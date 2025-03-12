@@ -93,6 +93,7 @@ def Prophet_model(df,inp3,inp4):
     missed=time_df.loc[time_df['DAYS']<0]['DAYS'].count()
     total=time_df['DAYS'].count()
     percentage=((total-missed)/total)*100
+    percentage=round(percentage,1)
     # st.write(total,missed,percentage)
     return forecast,percentage
 
