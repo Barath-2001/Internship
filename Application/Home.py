@@ -397,9 +397,9 @@ if selected=='Home':
                 )
                 st.dataframe(temp_df)
                 st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
-                forecast["Forecaste Rejection Rate"] = forecast["Forecaste Rejection Rate"].apply(
-                    lambda x: f"{round(abs(float(x)), 2)}"
-                )
+                # forecast["Forecaste Rejection Rate"] = forecast["Forecaste Rejection Rate"].apply(
+                #     lambda x: f"{round(abs(float(x)), 2)}"
+                # )
                 # st.write(forecast)
 
                 st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
