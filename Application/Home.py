@@ -386,7 +386,7 @@ if selected=='Home':
                 st.dataframe(
                     temp_df,
                     column_config={
-                        "ON TIME DELIVERY": st.column_config.Column(
+                        "ON TIME DELIVERY": st.column_config.NumberColumn(
                             "ON TIME DELIVERY",
                             format=lambda x: f"{x} 🟢" if x >=95.0  else
                                            (f"{x} 🟡" if x>=80.0 and x<95.0 else
