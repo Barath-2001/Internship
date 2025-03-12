@@ -388,8 +388,8 @@ if selected=='Home':
                     column_config={
                         "ON TIME DELIVERY": st.column_config.Column(
                             "ON TIME DELIVERY",
-                            format=lambda x: f"{x} 🟢" if x >=95  else
-                                           (f"{x} 🟡" if x>=80 and x<95 else
+                            format=lambda x: f"{x} 🟢" if x >=95.0  else
+                                           (f"{x} 🟡" if x>=80.0 and x<95.0 else
                                             f"{x} 🔴")
                         ),
                     }
