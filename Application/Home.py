@@ -94,6 +94,9 @@ def Prophet_model(df,inp3,inp4):
     total=time_df['DAYS'].count()
     percentage=((total-missed)/total)*100
     percentage=round(percentage,1)
+    forecast['Forecast Date']=forecast['ds'].copy()
+    forecast['Forecaste Rejection Rate']=forecast['yhat'].copy()
+    forecast.drop(columns=['ds','yhat'],inplace=True )
     # st.write(total,missed,percentage)
     return forecast,percentage
 
@@ -394,9 +397,7 @@ if selected=='Home':
                 st.dataframe(temp_df)
                
                 # st.write(forecast)
-                forecast['Forecast Date']=forecast['ds'].copy()
-                forecast['Forecaste Rejection Rate']=forecast['yhat'].copy()
-                forecast.drop(columns=['ds','yhat'],inplace=True )
+
                 st.dataframe(forecast[['Forecast Date','Forecaste Rejection Rate']].tail(3))
                 
             # temp_df= df_main.loc[(df_main['VENDOR_ID']==inp3)&(df_main['ITEM_ID'].isin(inp4))].sort_values(by=['VENDOR_ID','TRANSACTION_DATE','REJECTION_RATE'])
